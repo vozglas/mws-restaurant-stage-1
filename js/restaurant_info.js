@@ -55,9 +55,34 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
 
-  const image = document.getElementById('restaurant-img');
-  image.className = 'restaurant-img'
-  image.src = DBHelper.imageUrlForRestaurant(restaurant);
+  const picture = document.getElementById('restaurant-picture');
+  
+  const picSourceBig = document.createElement('source');
+  const bigPictureSrc = DBHelper.imageUrlForRestaurant(restaurant);
+  picSourceBig.setAttribute('srcset', bigPictureSrc);
+  picture.appendChild(picSourceBig);
+  picSourceBig.setAttribute('media', '(min-width: 1200px), (min-width: 650px) and (max-width: 849px)');
+  picture.appendChild(picSourceBig);
+
+  const picSourceMedium = document.createElement('source');
+  const mediumPictureSrc = DBHelper.mediumImageUrlForRestaurant(restaurant);
+  picSourceMedium.setAttribute('srcset', mediumPictureSrc);
+  picture.appendChild(picSourceMedium);
+  picSourceMedium.setAttribute('media', '(min-width: 850px) and (max-width: 1199px), (min-width: 500px) and (max-width: 649px)');
+  picture.appendChild(picSourceMedium);
+
+  const picSourceSmall = document.createElement('source');
+  const smallPictureSrc = DBHelper.smallImageUrlForRestaurant(restaurant);
+  picSourceSmall.setAttribute('srcset', smallPictureSrc);
+  picture.appendChild(picSourceSmall);
+  picSourceSmall.setAttribute('media', '(max-width: 499px)');
+  picture.appendChild(picSourceSmall);
+
+  const img = document.createElement('img');
+  img.style.width = "100%";
+  img.style.borderRadius = "5% 0";
+  img.setAttribute("alt", `Restaurant ${restaurant.name}`)
+  picture.appendChild(img);
 
   const cuisine = document.getElementById('restaurant-cuisine');
   cuisine.innerHTML = restaurant.cuisine_type;
@@ -118,18 +143,33 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
 createReviewHTML = (review) => {
   const li = document.createElement('li');
   const name = document.createElement('p');
+  const reviewHead = document.createElement('div');
+  const reviewHeadBack = document.createElement('div');
+
+  name.className = 'review-name';
   name.innerHTML = review.name;
-  li.appendChild(name);
 
   const date = document.createElement('p');
+  date.className = 'review-date';
   date.innerHTML = review.date;
-  li.appendChild(date);
+
+  reviewHead.className = 'review-head';
+  reviewHead.appendChild(name);
+  reviewHead.appendChild(date);
+  reviewHeadBack.className = 'review-head-back';
+  reviewHeadBack.innerHTML = 'corner';
+  
+  li.appendChild(reviewHeadBack);
+  li.appendChild(reviewHead);
+  
 
   const rating = document.createElement('p');
+  rating.className = 'review-rating';
   rating.innerHTML = `Rating: ${review.rating}`;
   li.appendChild(rating);
 
   const comments = document.createElement('p');
+  comments.className = 'review-comments';
   comments.innerHTML = review.comments;
   li.appendChild(comments);
 
