@@ -1,15 +1,74 @@
+
 let restaurants,
   neighborhoods,
   cuisines
 var map
 var markers = []
 
+
+trackWorkerState = (worker) => {
+
+}
+/* Register SW */
+registerSW = () => {
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker.register('/sw.js').then(function(reg) {
+
+      if (!navigator.serviceWorker.controller) {
+        return;
+      }
+      
+      if (reg.waiting) {
+        updateWorker(reg.waiting);
+        return;
+      }
+
+      if (reg.installing) {
+        const worker = reg.installing;
+        worker.addEventListener('statechange', () => {
+          if (worker.state === 'installed') {
+            worker.postMessage({action: 'skipWaiting'});
+          }
+        })
+        return;
+      }
+
+      reg.addEventListener('updatefound', () => {
+        const worker = reg.installing;
+        worker.addEventListener('statechange', () => {
+          if (worker.state === 'installed') {
+            worker.postMessage({action: 'skipWaiting'});
+          }
+        })
+      })
+
+    }).catch(function() {
+      console.log('Registration failed!');
+    });
+
+    // Ensure refresh is only called once.
+    // This works around a bug in "force update on reload".
+    let refreshing;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      window.location.reload();
+      refreshing = true;
+    })
+  }
+}
+
+
+
 /**
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
+
+
 document.addEventListener('DOMContentLoaded', (event) => {
+  registerSW();
   fetchNeighborhoods();
   fetchCuisines();
+
 });
 
 /**
@@ -181,3 +240,5 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 }
+
+

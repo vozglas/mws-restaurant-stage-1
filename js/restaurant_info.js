@@ -1,3 +1,49 @@
+/* Register SW */
+registerSW = () => {
+  if (navigator.serviceWorker) {
+    navigator.serviceWorker.register('/sw.js').then(function(reg) {
+      if (!navigator.serviceWorker.controller) {
+        return;
+      }
+      
+      if (reg.waiting) {
+        updateWorker(reg.waiting);
+        return;
+      }
+
+      if (reg.installing) {
+        const worker = reg.installing;
+        worker.addEventListener('statechange', () => {
+          if (worker.state === 'installed') {
+            worker.postMessage({action: 'skipWaiting'});
+          }
+        })
+        return;
+      }
+
+      reg.addEventListener('updatefound', () => {
+        const worker = reg.installing;
+        worker.addEventListener('statechange', () => {
+          if (worker.state === 'installed') {
+            worker.postMessage({action: 'skipWaiting'});
+          }
+        })
+      })
+    }).catch(function() {
+      console.log('Registration failed!');
+    });
+
+    // Ensure refresh is only called once.
+    // This works around a bug in "force update on reload".
+    let refreshing;
+    navigator.serviceWorker.addEventListener('controllerchange', () => {
+      if (refreshing) return;
+      window.location.reload();
+      refreshing = true;
+    })
+  }
+}
+
 let restaurant;
 var map;
 
@@ -5,6 +51,7 @@ var map;
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
+  registerSW();
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
