@@ -6,9 +6,7 @@ var map
 var markers = []
 
 
-trackWorkerState = (worker) => {
 
-}
 /* Register SW */
 registerSW = () => {
   if (navigator.serviceWorker) {
@@ -24,23 +22,26 @@ registerSW = () => {
       }
 
       if (reg.installing) {
-        const worker = reg.installing;
-        worker.addEventListener('statechange', () => {
-          if (worker.state === 'installed') {
-            worker.postMessage({action: 'skipWaiting'});
-          }
-        })
+        trackWorker(reg.installing);
         return;
       }
 
       reg.addEventListener('updatefound', () => {
-        const worker = reg.installing;
-        worker.addEventListener('statechange', () => {
-          if (worker.state === 'installed') {
-            worker.postMessage({action: 'skipWaiting'});
-          }
-        })
+        trackWorker(reg.installing);
+        return;
       })
+
+    trackWorker = (worker) => {
+      worker.addEventListener('statechange', () => {
+        if (worker.state === 'installed') {
+          updateWorker(worker);
+        }
+      })
+    }
+
+    updateWorker = (worker) => {
+      worker.postMessage({action: 'skipWaiting'});
+    }
 
     }).catch(function() {
       console.log('Registration failed!');
@@ -48,10 +49,10 @@ registerSW = () => {
 
     // Ensure refresh is only called once.
     // This works around a bug in "force update on reload".
-    let refreshing;
+    let refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', () => {
       if (refreshing) return;
-      window.location.reload();
+      window.location.reload(true);
       refreshing = true;
     })
   }
@@ -63,12 +64,10 @@ registerSW = () => {
  * Fetch neighborhoods and cuisines as soon as the page is loaded.
  */
 
-
 document.addEventListener('DOMContentLoaded', (event) => {
   registerSW();
   fetchNeighborhoods();
   fetchCuisines();
-
 });
 
 /**
@@ -194,35 +193,44 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 /**
  * Create restaurant HTML.
  */
+/* let i = 1; */
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
+
+  const mainWrap = document.createElement('div');
 
   const image = document.createElement('img');
   image.className = 'restaurant-img';
   //image.src = DBHelper.imageUrlForRestaurant(restaurant);
-  
-  // small images for main page
   image.src = DBHelper.smallImageUrlForRestaurant(restaurant);
   image.setAttribute("alt", `Restaurant ${restaurant.name}`)
-  li.append(image);
+  //li.append(image);
+  mainWrap.append(image);
 
   const name = document.createElement('h1');
   name.innerHTML = restaurant.name;
-  li.append(name);
+  //li.append(name);
+  mainWrap.append(name);
 
   const neighborhood = document.createElement('p');
   neighborhood.innerHTML = restaurant.neighborhood;
-  li.append(neighborhood);
+  //li.append(neighborhood);
+  mainWrap.append(neighborhood);
 
   const address = document.createElement('p');
   address.innerHTML = restaurant.address;
-  li.append(address);
+  //li.append(address);
+  mainWrap.append(address);
 
+  li.append(mainWrap);
+
+  const moreWrap = document.createElement('div');
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
   more.setAttribute('aria-label', `Read more about ${restaurant.name} restaurant.`);
   more.href = DBHelper.urlForRestaurant(restaurant);
-  li.append(more)
+  moreWrap.append(more);
+  li.append(moreWrap)
 
   return li
 }
@@ -240,5 +248,3 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 }
-
-

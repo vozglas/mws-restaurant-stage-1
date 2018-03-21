@@ -1,4 +1,4 @@
-const staticCacheName = 'rest-review-v22';
+const staticCacheName = 'rest-review-v5';
  
 self.addEventListener('install', event => {
     /* console.log('install'); */

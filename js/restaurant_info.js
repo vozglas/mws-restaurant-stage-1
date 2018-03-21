@@ -12,35 +12,40 @@ registerSW = () => {
       }
 
       if (reg.installing) {
-        const worker = reg.installing;
-        worker.addEventListener('statechange', () => {
-          if (worker.state === 'installed') {
-            worker.postMessage({action: 'skipWaiting'});
-          }
-        })
+        trackWorker(reg.installing);
         return;
       }
 
       reg.addEventListener('updatefound', () => {
-        const worker = reg.installing;
+        trackWorker(reg.installing);
+        return;
+      })
+
+      trackWorker = (worker) => {
         worker.addEventListener('statechange', () => {
           if (worker.state === 'installed') {
-            worker.postMessage({action: 'skipWaiting'});
+            updateWorker(worker);
           }
         })
+      }
+  
+      updateWorker = (worker) => {
+        worker.postMessage({action: 'skipWaiting'});
+      }
+      
+      // Ensure refresh is only called once.
+      // This works around a bug in "force update on reload".
+      let refreshing = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (refreshing) return;
+        window.location.reload(true);
+        refreshing = true;
       })
     }).catch(function() {
       console.log('Registration failed!');
     });
 
-    // Ensure refresh is only called once.
-    // This works around a bug in "force update on reload".
-    let refreshing;
-    navigator.serviceWorker.addEventListener('controllerchange', () => {
-      if (refreshing) return;
-      window.location.reload();
-      refreshing = true;
-    })
+
   }
 }
 
