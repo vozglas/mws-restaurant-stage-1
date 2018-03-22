@@ -29,8 +29,6 @@ a:hover, a:focus {
 	text-decoration: none;
 }
 
-
-
 a img{
 	border: none 0px #fff;
 }
@@ -231,7 +229,7 @@ nav h1 a:focus {
 
 #restaurants-list li a:hover,
 #restaurants-list li a:focus {
-  background-color:  #ffa500;
+  background-color:  #14598A;
   outline: none;
   text-decoration: underline;
   box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14),
