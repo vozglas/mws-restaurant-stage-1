@@ -10,7 +10,7 @@ var markers = []
 /* Register SW */
 registerSW = () => {
   if (navigator.serviceWorker) {
-    navigator.serviceWorker.register('/sw.js').then(function(reg) {
+      navigator.serviceWorker.register('/sw.js').then(function(reg) {
 
       if (!navigator.serviceWorker.controller) {
         return;
@@ -225,6 +225,7 @@ createRestaurantHTML = (restaurant) => {
   li.append(mainWrap);
 
   const moreWrap = document.createElement('div');
+  moreWrap.className = 'more-wrap';
   const more = document.createElement('a');
   more.innerHTML = 'View Details';
   more.setAttribute('aria-label', `Read more about ${restaurant.name} restaurant.`);

@@ -44,8 +44,6 @@ registerSW = () => {
     }).catch(function() {
       console.log('Registration failed!');
     });
-
-
   }
 }
 
@@ -217,7 +215,32 @@ createReviewHTML = (review) => {
 
   const rating = document.createElement('p');
   rating.className = 'review-rating';
-  rating.innerHTML = `Rating: ${review.rating}`;
+  rating.setAttribute('aria-label', `${review.name} rated this restaurant ${review.rating} stars out of 5`);
+
+  const stars = document.createElement('span');
+  stars.setAttribute('aria-hidden', true);
+  stars.className = 'rating-stars';
+  
+  const noStars = document.createElement('span');
+  noStars.setAttribute('aria-hidden', true);
+  noStars.className = 'rating-no-stars';
+
+  let strStars = "";
+  let strNoStars = "";
+  for (let i=0; i< review.rating; i++) {
+    strStars += "★";
+  }
+  stars.innerHTML = strStars;
+  
+  for (let i=0; i < (5 - review.rating); i++) {
+    strNoStars += "★";
+  }
+  noStars.innerHTML = strNoStars;
+
+  rating.appendChild(stars);
+  rating.appendChild(noStars);
+
+  //rating.innerHTML = strStars;/* `Rating: ${review.rating}`; */
   li.appendChild(rating);
 
   const comments = document.createElement('p');
