@@ -195,7 +195,7 @@ nav h1 a:focus {
   margin-top: 20px;
   border-radius: 5px;
 }
-#restaurants-list li h1 {
+#restaurants-list li h2 {
   color: #A52A2A;
   background-color: #fff;
   font-family: 'Roboto',Arial,sans-serif;
