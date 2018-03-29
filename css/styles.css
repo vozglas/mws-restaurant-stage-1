@@ -331,7 +331,7 @@ nav h1 a:focus {
   padding: 30px 20px 80px 20px;
 }
 
-#reviews-container h2 {
+#reviews-container h3 {
   color: #A52A2A;
   font-weight: 400;
   letter-spacing: 5px;
@@ -340,6 +340,8 @@ nav h1 a:focus {
   width: 50%;
   margin: 0 0 10px 30px;
 }
+
+
 #reviews-list {
   margin: 0;
   padding: 0;
