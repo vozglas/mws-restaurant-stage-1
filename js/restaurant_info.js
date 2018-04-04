@@ -6,7 +6,7 @@ var map;
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
-  registerSW();
+  //registerSW();
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
@@ -35,15 +35,19 @@ fetchRestaurantFromURL = (callback) => {
     error = 'No restaurant id in URL'
     callback(error, null);
   } else {
-    DBHelper.fetchRestaurantById(id, (error, restaurant) => {
+
+    return DBHelper.fetchRestaurantById(id).then(restaurant => {
       self.restaurant = restaurant;
       if (!restaurant) {
+        error = 'Restaurant not found!'
         console.error(error);
         return;
       }
       fillRestaurantHTML();
       callback(null, restaurant)
-    });
+    }).catch(error => {
+      console.log(error);
+    })
   }
 }
 
@@ -67,14 +71,14 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   picture.appendChild(picSourceBig);
 
   const picSourceMedium = document.createElement('source');
-  const mediumPictureSrc = DBHelper.mediumImageUrlForRestaurant(restaurant);
+  const mediumPictureSrc = DBHelper.imageUrlForRestaurant(restaurant, 'medium');
   picSourceMedium.setAttribute('srcset', mediumPictureSrc);
   picture.appendChild(picSourceMedium);
   picSourceMedium.setAttribute('media', '(min-width: 850px) and (max-width: 1199px), (min-width: 500px) and (max-width: 649px)');
   picture.appendChild(picSourceMedium);
 
   const picSourceSmall = document.createElement('source');
-  const smallPictureSrc = DBHelper.smallImageUrlForRestaurant(restaurant);
+  const smallPictureSrc = DBHelper.imageUrlForRestaurant(restaurant, 'small');
   picSourceSmall.setAttribute('srcset', smallPictureSrc);
   picture.appendChild(picSourceSmall);
   picSourceSmall.setAttribute('media', '(max-width: 499px)');
