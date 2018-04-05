@@ -41,8 +41,8 @@ registerSW = () => {
           window.location.reload(true);
           refreshing = true;
         })
-      }).catch(function() {
-        console.log('Registration failed!');
+      }).catch(function(error) {
+        console.log(error);
       });
     }
   }

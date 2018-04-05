@@ -10,7 +10,8 @@ var markers = [];
  */
 
 document.addEventListener('DOMContentLoaded', (event) => {
-  //registerSW();
+  registerSW();
+  
   fetchNeighborhoods();
   fetchCuisines();
 });

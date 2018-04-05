@@ -16,6 +16,7 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants() {
+    DBHelper.openRestIdb();
     return fetch(`${this.DATABASE_URL}/restaurants`).then(response => {
       return response.json();
     }).catch(error => {
@@ -141,4 +142,16 @@ class DBHelper {
     return marker;
   }
 
+  /* IDB */
+  static openRestIdb() {
+    if (!navigator.serviceWorker) {
+      return Promise.resolve();
+    }
+  
+    return idb.open('restDB', 1, function(upgradeDb) {
+      var store = upgradeDb.createObjectStore('restaurants', {
+        keyPath: 'id'
+      });
+    });
+  }
 }
