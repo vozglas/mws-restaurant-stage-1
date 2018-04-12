@@ -16,11 +16,44 @@ class DBHelper {
    * Fetch all restaurants.
    */
   static fetchRestaurants() {
-    DBHelper.openRestIdb();
+    return DBHelper.openRestIdb().then(db => {
+      if (!db) {
+        // fetch restaurants from network
+        return DBHelper.getAllRestaurantsFromNetwork();
+      } else {
+        return db.transaction('restaurants').objectStore('restaurants').count().then(count => {
+          if (count > 0) {
+            // get restaurants from DB
+            return db.transaction('restaurants').objectStore('restaurants').getAll();
+          } else {
+            // fetch restaurants from network and update DB
+            return DBHelper.updateDB();  
+          }
+        })
+      }
+    })
+  }
+
+  static getAllRestaurantsFromNetwork() {
     return fetch(`${this.DATABASE_URL}/restaurants`).then(response => {
       return response.json();
     }).catch(error => {
-      console.log('Fetch Restaurants Error!')
+      console.log(`fetch restaurants from network error!`);
+      console.log(error);
+    })
+  }
+
+  static updateDB() {
+    return DBHelper.openRestIdb().then(db => {
+      if (db) {
+        return DBHelper.getAllRestaurantsFromNetwork().then(restaurants => {
+          for (const r of restaurants) {
+            db.transaction('restaurants', 'readwrite').objectStore('restaurants').put(r);
+          }
+        }).then(() => {
+          return db.transaction('restaurants').objectStore('restaurants').getAll();
+        })  
+      }
     })
   }
 
@@ -28,13 +61,40 @@ class DBHelper {
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id) {
-    return fetch(`${this.DATABASE_URL}/restaurants/${id}`).then(response => {
-      return response.json();
-    }).catch(error => {
-      console.log(`Fetch restaurant by ID error!`)
+    return DBHelper.openRestIdb().then(db => {
+      if (!db) {
+        console.log('restaurant from network! No DB');
+        return fetch(`${this.DATABASE_URL}/restaurants/${id}`).then(response => {
+              return response.json();
+            }).catch(error => {
+              console.log(`Fetch restaurant by ID error!`)
+            })        
+      } else {
+        // get restaurant from DB
+        return db.transaction('restaurants').objectStore('restaurants').get(parseInt(id)).then(rest => {
+          if (!rest) {
+            // if not found then fetch from network
+            console.log('restaurant from network!');
+            return fetch(`${this.DATABASE_URL}/restaurants/${id}`).then(response => {
+              // add to DB and return
+              return response.json().then(restaurant => {
+                return db.transaction('restaurants', 'readwrite').objectStore('restaurants').put(restaurant).then(() => {
+                  return restaurant;
+                })
+              })
+            })
+          } else {
+            console.log('restaurant from DB!');
+            return rest;
+          }
+        }).catch(error => {
+            console.log(`Fetch restaurant by ID error!`)
+          })      
+        }
     })
   }
 
+    
   /**
    * Fetch restaurants by a cuisine type
    */
@@ -149,9 +209,7 @@ class DBHelper {
     }
   
     return idb.open('restDB', 1, function(upgradeDb) {
-      var store = upgradeDb.createObjectStore('restaurants', {
-        keyPath: 'id'
-      });
+      const restaurantsStore = upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
     });
   }
 }
