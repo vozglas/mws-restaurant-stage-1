@@ -1,6 +1,6 @@
-const staticCacheName = 'rest-review-v1';
-const imageCache = 'rest-images-v1';
-const mapCache = 'rest-map-v1';
+const staticCacheName = 'rest-review-v2';
+const imageCache = 'rest-images-v2';
+const mapCache = 'rest-map-v2';
 const allCaches = [staticCacheName, imageCache, mapCache];
  
 
@@ -20,6 +20,7 @@ self.addEventListener('install', event => {
                 '/js/sw_reg.js',
                 '/js/idb.js',
                 '/css/styles.css',
+                '/manifest.webmanifest',
                 'https://fonts.googleapis.com/css?family=Roboto'
             ]);
         }).catch(error => {
