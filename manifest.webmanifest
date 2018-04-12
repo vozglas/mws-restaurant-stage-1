@@ -1,6 +1,6 @@
 {
     "name": "RESTAURANT REVIEWS",
-    "short_name": "RESTAURANT REVIEWS",
+    "short_name": "RR",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#14598A",
