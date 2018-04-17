@@ -63,7 +63,6 @@ class DBHelper {
   static fetchRestaurantById(id) {
     return DBHelper.openRestIdb().then(db => {
       if (!db) {
-        console.log('restaurant from network! No DB');
         return fetch(`${this.DATABASE_URL}/restaurants/${id}`).then(response => {
               return response.json();
             }).catch(error => {
@@ -74,8 +73,7 @@ class DBHelper {
         return db.transaction('restaurants').objectStore('restaurants').get(parseInt(id)).then(rest => {
           if (!rest) {
             // if not found then fetch from network
-            console.log('restaurant from network!');
-            return fetch(`${this.DATABASE_URL}/restaurants/${id}`).then(response => {
+           return fetch(`${this.DATABASE_URL}/restaurants/${id}`).then(response => {
               // add to DB and return
               return response.json().then(restaurant => {
                 return db.transaction('restaurants', 'readwrite').objectStore('restaurants').put(restaurant).then(() => {
@@ -84,7 +82,6 @@ class DBHelper {
               })
             })
           } else {
-            console.log('restaurant from DB!');
             return rest;
           }
         }).catch(error => {
@@ -173,16 +170,16 @@ class DBHelper {
    * Restaurant image URL.
    */
   static imageUrlForRestaurant(restaurant, size = '') {
-    if (restaurant.photograph === undefined) {return (`/img/no_image.jpg`)}
+    if (restaurant.photograph === undefined) {return (`/img/no_image`)}
     switch(size) {
       case 'small':
-        return (`/img/${restaurant.photograph}_small.jpg`);
+        return (`/img/${restaurant.photograph}_small`);
         break;
       case 'medium':
-        return (`/img/${restaurant.photograph}_medium.jpg`);
+        return (`/img/${restaurant.photograph}_medium.`);
         break;
       default:
-        return (`/img/${restaurant.photograph}.jpg`);
+        return (`/img/${restaurant.photograph}`);
         break;
     }
   }

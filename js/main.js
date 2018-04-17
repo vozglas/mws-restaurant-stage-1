@@ -137,11 +137,22 @@ createRestaurantHTML = (restaurant) => {
 
   const mainWrap = document.createElement('div');
 
+
+  const picContainer = document.createElement('picture');
+
+  const imageWebP = document.createElement('source');
+  imageWebP.setAttribute('srcset' , DBHelper.imageUrlForRestaurant(restaurant, 'small') + '.webp');
+
   const image = document.createElement('img');
   image.className = 'restaurant-img';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant, 'small');
+  image.src = DBHelper.imageUrlForRestaurant(restaurant, 'small') + '.jpg';
   image.setAttribute("alt", `Restaurant ${restaurant.name}`)
-  mainWrap.append(image);
+
+  picContainer.append(imageWebP);
+  picContainer.append(image);
+  
+  mainWrap.append(picContainer);
+  //mainWrap.append(image);
 
   const name = document.createElement('h2');
   name.innerHTML = restaurant.name;

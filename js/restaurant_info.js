@@ -63,26 +63,13 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const picture = document.getElementById('restaurant-picture');
   
-  const picSourceBig = document.createElement('source');
-  const bigPictureSrc = DBHelper.imageUrlForRestaurant(restaurant);
-  picSourceBig.setAttribute('srcset', bigPictureSrc);
-  picture.appendChild(picSourceBig);
-  picSourceBig.setAttribute('media', '(min-width: 1200px), (min-width: 650px) and (max-width: 849px)');
-  picture.appendChild(picSourceBig);
 
-  const picSourceMedium = document.createElement('source');
-  const mediumPictureSrc = DBHelper.imageUrlForRestaurant(restaurant, 'medium');
-  picSourceMedium.setAttribute('srcset', mediumPictureSrc);
-  picture.appendChild(picSourceMedium);
-  picSourceMedium.setAttribute('media', '(min-width: 850px) and (max-width: 1199px), (min-width: 500px) and (max-width: 649px)');
-  picture.appendChild(picSourceMedium);
-
-  const picSourceSmall = document.createElement('source');
-  const smallPictureSrc = DBHelper.imageUrlForRestaurant(restaurant, 'small');
-  picSourceSmall.setAttribute('srcset', smallPictureSrc);
-  picture.appendChild(picSourceSmall);
-  picSourceSmall.setAttribute('media', '(max-width: 499px)');
-  picture.appendChild(picSourceSmall);
+  picture.appendChild(makePictureSource(restaurant, "", '.webp', '(min-width: 1200px), (min-width: 650px) and (max-width: 849px)'));
+  picture.appendChild(makePictureSource(restaurant, "medium", '.webp', '(min-width: 850px) and (max-width: 1199px), (min-width: 500px) and (max-width: 649px)'));
+  picture.appendChild(makePictureSource(restaurant, "small", '.webp', '(max-width: 499px)'));
+  picture.appendChild(makePictureSource(restaurant, "", '.jpg', '(min-width: 1200px), (min-width: 650px) and (max-width: 849px)'));
+  picture.appendChild(makePictureSource(restaurant, "medium", '.jpg', '(min-width: 850px) and (max-width: 1199px), (min-width: 500px) and (max-width: 649px)'));
+  picture.appendChild(makePictureSource(restaurant, "small", '.jpg', '(max-width: 499px)'));
 
   const img = document.createElement('img');
   img.style.width = "100%";
@@ -99,6 +86,15 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   // fill reviews
   fillReviewsHTML();
+}
+
+// create source for <picture>
+makePictureSource = (restaurant, picSize = "", picExtension, mediaQuery) => {
+  const picSource = document.createElement('source');
+  const picSrcSet = DBHelper.imageUrlForRestaurant(restaurant, picSize) + picExtension;
+  picSource.setAttribute('srcset', picSrcSet);
+  picSource.setAttribute('media', mediaQuery);
+  return picSource;
 }
 
 /**

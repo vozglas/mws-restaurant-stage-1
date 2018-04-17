@@ -1,6 +1,6 @@
-const staticCacheName = 'rest-review-v2';
-const imageCache = 'rest-images-v2';
-const mapCache = 'rest-map-v2';
+const staticCacheName = 'rest-review-v1';
+const imageCache = 'rest-images-v1';
+const mapCache = 'rest-map-v1';
 const allCaches = [staticCacheName, imageCache, mapCache];
  
 
@@ -47,21 +47,13 @@ self.addEventListener('activate', event => {
 self.addEventListener('fetch', function(event) { 
     const requestUrl = new URL(event.request.url);
     
-    // images cache
-    if (requestUrl.pathname.startsWith('/img/')) {
-        event.respondWith(servePhoto(event.request));
-        return;
-    }
-
-    // maps cache
-    if (requestUrl.origin.includes('/maps.')) {
-        event.respondWith(serveMaps(event.request));
-        return;
-    }
-
-
-
     if (requestUrl.origin === location.origin) {
+    // images cache
+        if (requestUrl.pathname.startsWith('/img/')) {
+            event.respondWith(servePhoto(event.request));
+            return;
+        }
+
         if (requestUrl.pathname.startsWith('/restaurant')) {
           event.respondWith(caches.match('/restaurant.html'));
           return;
@@ -73,6 +65,12 @@ self.addEventListener('fetch', function(event) {
         }
     }
     
+    // maps cache
+    if (requestUrl.origin.includes('/maps.')) {
+        event.respondWith(serveMaps(event.request));
+        return;
+    }
+
     event.respondWith(
         caches.match(event.request).then(response => {
             return response || fetch(event.request);
