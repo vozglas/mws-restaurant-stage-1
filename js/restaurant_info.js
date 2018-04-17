@@ -2,6 +2,8 @@
 let restaurant;
 var map;
 
+registerSW();
+
 /**
  * Initialize Google map, called from HTML.
  */

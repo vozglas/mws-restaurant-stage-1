@@ -134,10 +134,7 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
  */
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
-
   const mainWrap = document.createElement('div');
-
-
   const picContainer = document.createElement('picture');
 
   const imageWebP = document.createElement('source');
@@ -150,9 +147,7 @@ createRestaurantHTML = (restaurant) => {
 
   picContainer.append(imageWebP);
   picContainer.append(image);
-  
   mainWrap.append(picContainer);
-  //mainWrap.append(image);
 
   const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
