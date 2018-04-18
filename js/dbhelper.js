@@ -176,7 +176,7 @@ class DBHelper {
         return (`/img/${restaurant.photograph}_small`);
         break;
       case 'medium':
-        return (`/img/${restaurant.photograph}_medium.`);
+        return (`/img/${restaurant.photograph}_medium`);
         break;
       default:
         return (`/img/${restaurant.photograph}`);

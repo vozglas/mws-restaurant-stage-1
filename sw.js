@@ -19,6 +19,7 @@ self.addEventListener('install', event => {
                 '/js/restaurant_info.js',
                 '/js/sw_reg.js',
                 '/js/idb.js',
+                '/js/lazy-load.js',
                 '/css/styles.css',
                 '/manifest.webmanifest',
                 'https://fonts.googleapis.com/css?family=Roboto'

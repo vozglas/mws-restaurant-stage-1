@@ -98,6 +98,7 @@ updateRestaurants = () => {
   DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood).then(restaurants => {
     resetRestaurants(restaurants);
     fillRestaurantsHTML();
+    lazyLoad();
   }).catch(error => {
     console.log(error);
   });
@@ -135,19 +136,12 @@ fillRestaurantsHTML = (restaurants = self.restaurants) => {
 createRestaurantHTML = (restaurant) => {
   const li = document.createElement('li');
   const mainWrap = document.createElement('div');
-  const picContainer = document.createElement('picture');
 
-  const imageWebP = document.createElement('source');
-  imageWebP.setAttribute('srcset' , DBHelper.imageUrlForRestaurant(restaurant, 'small') + '.webp');
-
-  const image = document.createElement('img');
-  image.className = 'restaurant-img';
-  image.src = DBHelper.imageUrlForRestaurant(restaurant, 'small') + '.jpg';
-  image.setAttribute("alt", `Restaurant ${restaurant.name}`)
-
-  picContainer.append(imageWebP);
-  picContainer.append(image);
-  mainWrap.append(picContainer);
+  const imgWrap = document.createElement('div');
+  imgWrap.className = 'lazy-img';
+  imgWrap.setAttribute('data-src', DBHelper.imageUrlForRestaurant(restaurant, 'small'))
+  imgWrap.setAttribute('data-alt', restaurant.name);
+  mainWrap.append(imgWrap);
 
   const name = document.createElement('h2');
   name.innerHTML = restaurant.name;
@@ -188,3 +182,7 @@ addMarkersToMap = (restaurants = self.restaurants) => {
     self.markers.push(marker);
   });
 }
+
+
+
+
