@@ -19,7 +19,6 @@ self.addEventListener('install', event => {
                 '/js/restaurant_info.js',
                 '/js/sw_reg.js',
                 '/js/idb.js',
-                '/js/lazy-load.js',
                 '/css/styles.css',
                 '/manifest.webmanifest',
                 'https://fonts.googleapis.com/css?family=Roboto'
@@ -100,12 +99,14 @@ servePhoto = (request) => {
 
 serveMaps = (request) => {
     // no need to cache request, that checks API key, 'cause it will go to google server anyway
-    if (!request.origin.includes('QuotaService.RecordEvent')) {
-        return cache.match(request.url).then(response => {
-            if (response) return response;
-            return fetch(request).then(networkResponse => {
-                cache.put(request.url, networkResponse.clone());
-                return networkResponse;
+    if (!request.url.includes('QuotaService.RecordEvent')) {
+        return caches.open(mapCache).then(cache => {
+            return cache.match(request.url).then(response => {
+                if (response) return response;
+                return fetch(request).then(networkResponse => {
+                    cache.put(request.url, networkResponse.clone());
+                    return networkResponse;
+                })
             })
         })
     } else {
