@@ -1,6 +1,6 @@
-const staticCacheName = 'rest-review-v1';
-const imageCache = 'rest-images-v1';
-const mapCache = 'rest-map-v1';
+const staticCacheName = 'rest-review-v2';
+const imageCache = 'rest-images-v2';
+const mapCache = 'rest-map-v2';
 const allCaches = [staticCacheName, imageCache, mapCache];
  
 
@@ -99,14 +99,18 @@ servePhoto = (request) => {
 }
 
 serveMaps = (request) => {
-    return caches.open(mapCache).then(cache => {
+    // no need to cache request, that checks API key, 'cause it will go to google server anyway
+    if (!request.origin.includes('QuotaService.RecordEvent')) {
         return cache.match(request.url).then(response => {
             if (response) return response;
-
             return fetch(request).then(networkResponse => {
                 cache.put(request.url, networkResponse.clone());
                 return networkResponse;
             })
         })
-    })
+    } else {
+        return fetch(request).then(response => {
+            return response;
+        })
+    }
 }

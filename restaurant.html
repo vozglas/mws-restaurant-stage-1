@@ -5,40 +5,24 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta charset="utf-8">
   <meta name="theme-color" content="#14598A">
-  
-  <!-- Normalize.css for better cross-browser consistency -->
-  <!-- <link rel="stylesheet" src="//normalize-css.googlecode.com/svn/trunk/normalize.css" /> -->
-  <!-- Main CSS file -->
-  <!-- <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet"> -->
   <link rel="stylesheet" href="css/styles.css" type="text/css">
   <link rel="manifest" href="/manifest.webmanifest">
   <title>Restaurant Info</title>
 </head>
 
 <body class="inside">
-  <!-- Beginning header -->
   <header>
-    <!-- Beginning nav -->
     <nav>
       <h1><a href="/" aria-label="Home page">Restaurant Reviews</a></h1>
     </nav>
-    <!-- Beginning breadcrumb -->
     <ul id="breadcrumb" role="navigation">
       <li><a href="/" aria-label="Home page">Home</a></li>
     </ul>
-    <!-- End breadcrumb -->
-    <!-- End nav -->
   </header>
-  <!-- End header -->
-
-  <!-- Beginning main -->
   <main id="maincontent" role="main">
-    <!-- Beginning map -->
     <section id="map-container" aria-hidden="true">
       <div id="map" role="application"></div>
     </section>
-    <!-- End map -->
-    <!-- Beginning restaurant -->
     <section id="restaurant-container">
       <h2 id="restaurant-name"></h2>
       <div class="res-img">
@@ -51,28 +35,19 @@
         <table id="restaurant-hours"></table>
       </div>
     </section>
-    <!-- end restaurant -->
-    <!-- Beginning reviews -->
     <section id="reviews-container">
       <ul id="reviews-list"></ul>
     </section>
-    <!-- End reviews -->
   </main>
-  <!-- End main -->
-
-  <!-- Beginning footer -->
   <footer id="footer">
     Copyright (c) 2018 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
   </footer>
-  <!-- End footer -->
 
-  <!-- Beginning scripts -->
   <script type="application/javascript" charset="utf-8" src="js/sw_reg.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/restaurant_info.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/idb.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKRIkODyl52K4XmRBW7ezKhzIHJeF6Wpo&libraries=places&callback=initMap"></script>
-  <!-- End scripts -->
 
 </body>
 
