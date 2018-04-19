@@ -1,6 +1,6 @@
 const staticCacheName = 'rest-review-v2';
-const imageCache = 'rest-images-v2';
-const mapCache = 'rest-map-v2';
+const imageCache = 'rest-images-v1';
+const mapCache = 'rest-map-v1';
 const allCaches = [staticCacheName, imageCache, mapCache];
  
 
@@ -19,7 +19,8 @@ self.addEventListener('install', event => {
                 '/js/restaurant_info.js',
                 '/js/sw_reg.js',
                 '/js/idb.js',
-                '/css/styles.css',
+                '/css/main.css',
+                '/css/rest_info.css',
                 '/manifest.webmanifest',
                 'https://fonts.googleapis.com/css?family=Roboto'
             ]);
@@ -98,20 +99,13 @@ servePhoto = (request) => {
 }
 
 serveMaps = (request) => {
-    // no need to cache request, that checks API key, 'cause it will go to google server anyway
-    if (!request.url.includes('QuotaService.RecordEvent')) {
-        return caches.open(mapCache).then(cache => {
-            return cache.match(request.url).then(response => {
-                if (response) return response;
-                return fetch(request).then(networkResponse => {
-                    cache.put(request.url, networkResponse.clone());
-                    return networkResponse;
-                })
+    return caches.open(mapCache).then(cache => {
+        return cache.match(request.url).then(response => {
+            if (response) return response;
+            return fetch(request).then(networkResponse => {
+                cache.put(request.url, networkResponse.clone());
+                return networkResponse;
             })
         })
-    } else {
-        return fetch(request).then(response => {
-            return response;
-        })
-    }
+    })
 }
