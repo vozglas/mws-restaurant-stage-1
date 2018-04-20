@@ -1,6 +1,6 @@
-const staticCacheName = 'rest-review-v2';
-const imageCache = 'rest-images-v1';
-const mapCache = 'rest-map-v1';
+const staticCacheName = 'rest-review-v3';
+const imageCache = 'rest-images-v3';
+const mapCache = 'rest-map-v3';
 const allCaches = [staticCacheName, imageCache, mapCache];
  
 
@@ -95,6 +95,8 @@ servePhoto = (request) => {
                 return networkResponse;
             })
         })
+    }).catch(error => {
+        console.log(`error getting photo: ${error}`)
     })
 }
 
@@ -107,5 +109,7 @@ serveMaps = (request) => {
                 return networkResponse;
             })
         })
+    }).catch(error => {
+        console.log(`error getting map: ${error}`)
     })
 }
