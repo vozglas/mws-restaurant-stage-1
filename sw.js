@@ -1,19 +1,20 @@
-const staticCacheName = 'rest-review-v3';
-const imageCache = 'rest-images-v3';
-const mapCache = 'rest-map-v3';
-const allCaches = [staticCacheName, imageCache, mapCache];
+const cahceVersion = "2";
+
+const staticCacheName = 'rest-review-v' + cahceVersion; 
+const imageCache = 'rest-images-v' + cahceVersion;
+const mapCache = 'rest-map-v' + cahceVersion;
+
+const allCaches = [staticCacheName, imageCache, mapCache]; 
  
 
 self.addEventListener('install', event => {
-    /* console.log('install'); */
-    
+    console.log('install');
     event.waitUntil(
         caches.open(staticCacheName).then(cache => {
             return cache.addAll([
                 '/',
                 '/index.html',
                 '/restaurant.html',
-                '/sw.js',
                 '/js/dbhelper.js',
                 '/js/main.js',
                 '/js/restaurant_info.js',
@@ -31,22 +32,23 @@ self.addEventListener('install', event => {
 }) 
 
 self.addEventListener('activate', event => {
-    /* console.log('activate'); */
+    console.log('activate');
     event.waitUntil(
         caches.keys().then(cacheNames => {
             return Promise.all(
                 cacheNames.filter(cacheName => {
                     return !allCaches.includes(cacheName);
                 }).map(cacheName => {
-                    caches.delete(cacheName);
+                    return caches.delete(cacheName);
                 })
             )
         })
     )
 })
 
-self.addEventListener('fetch', function(event) { 
+self.addEventListener('fetch', function(event) {
     const requestUrl = new URL(event.request.url);
+    /* console.log(requestUrl.pathname); */
     
     if (requestUrl.origin === location.origin) {
     // images cache
@@ -112,4 +114,4 @@ serveMaps = (request) => {
     }).catch(error => {
         console.log(`error getting map: ${error}`)
     })
-}
+} 
