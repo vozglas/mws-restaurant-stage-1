@@ -8,6 +8,19 @@ class DBHelper {
     return `http://localhost:${port}`; 
   }
 
+  /* IDB */
+  static openRestIdb() {
+    if (!navigator.serviceWorker) {
+      return Promise.resolve();
+    }
+  
+    return idb.open('restDB', 2, function(upgradeDb) {
+      const restaurantsStore = upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+      const reviewsStore = upgradeDb.createObjectStore('reviews', { keyPath: 'id' });
+    });
+  }
+
+
   /**
    * Fetch all restaurants.
    */
@@ -26,6 +39,17 @@ class DBHelper {
             return DBHelper.updateDB();  
           }
         })
+      }
+    })
+  }
+
+  static fetchReviews() {
+    return DBHelper.openRestIdb().then(db => {
+      if(!db) {
+        // fetch reviews from network
+
+      } else {
+        
       }
     })
   }
@@ -194,18 +218,14 @@ class DBHelper {
     return marker;
   }
 
-  /* IDB */
-  static openRestIdb() {
-    if (!navigator.serviceWorker) {
-      return Promise.resolve();
-    }
-  
-    return idb.open('restDB', 1, function(upgradeDb) {
-      const restaurantsStore = upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
-    });
-  }
+
 
   static addNewReview(review) {
-    
+    return fetch(`${this.DATABASE_URL}/reviews` , {
+      method: 'POST',
+      body: JSON.stringify(review)
+    }).catch(error => {
+      console.log(error);
+    })
   }
 }

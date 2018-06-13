@@ -37,7 +37,6 @@ fetchRestaurantFromURL = (callback) => {
     error = 'No restaurant id in URL'
     callback(error, null);
   } else {
-
     return DBHelper.fetchRestaurantById(id).then(restaurant => {
       self.restaurant = restaurant;
       if (!restaurant) {
@@ -218,25 +217,28 @@ validateReviewForm = () => {
   let errors = [];
   const author = document.getElementById('newReviewAuthor');
   const review = document.getElementById('newReviewText');
-  const rating = document.getElementById('newReviewRating');
+  const ratingElem = document.getElementById('newReviewRating');
 
+  let name = "";
   if (author) {
-    if (author.value.trim() === "") errors.push("Enter your name!");
+    author.value.trim() === "" ? errors.push("Enter your name!") : name = author.value.trim();
   }
   
+  let comments = "";
   if (review) {
-    if (review.value.trim() === "") errors.push("Write something about this restaurant!");
+    review.value.trim() === "" ? errors.push("Write something about this restaurant!") : comments = review.value.trim();
   }
 
-  if (rating) {
-    if (rating.value === '0' || rating.value === 0) {
+  let rating = 0;
+  if (ratingElem) {
+    if (ratingElem.value === '0' || ratingElem.value === 0) {
       errors.push("Rate this restaurant!");
+    } else {
+      rating = ratingElem.value;
     }
   }
-  
-
-  errors.length === 0 ? addReview() : showErrors(errors);
-
+  const restaurant_id = getParameterByName('id');
+  errors.length === 0 ? addReview({restaurant_id, name, rating, comments}) : showErrors(errors);
 }
 
 clearErrors = () => {
@@ -244,9 +246,18 @@ clearErrors = () => {
   errorWrapper.innerHTML = "";
 }
 
-addReview = (author, review, rating) => {
+cleanReviewForm = () => {
+  const author = document.getElementById('newReviewAuthor');
+  author.value = "";
+  const review = document.getElementById('newReviewText');
+  review.value = "";
+  const rating = document.getElementById('newReviewRating');
+  rating.value = 0;
+}
 
-  
+addReview = (review) => {
+  DBHelper.addNewReview(review);
+  cleanReviewForm();
 }
 
 showErrors  = (errors) => {
