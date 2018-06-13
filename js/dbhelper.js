@@ -204,4 +204,8 @@ class DBHelper {
       const restaurantsStore = upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
     });
   }
+
+  static addNewReview(review) {
+    
+  }
 }

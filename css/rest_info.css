@@ -206,7 +206,7 @@ nav h1 a:focus {
   #restaurant-cuisine {
     background-color: #333;
     color: #ddd;
-    font-size: 20px;
+    font-size: 18px;
     font-weight: 300;
     letter-spacing: 10px;
     margin: 0 0 20px 10px;
@@ -216,7 +216,7 @@ nav h1 a:focus {
   }
   
   #restaurant-address, #restaurant-hours{
-    font-size: 20px;
+    font-size: 18px;
     margin: 10px 10px 10px 50px;
   }
   
@@ -240,10 +240,62 @@ nav h1 a:focus {
     text-transform: uppercase;
     line-height: 1.1;
     width: 50%;
-    margin: 0 0 10px 30px;
+  }
+
+  .new-review-wrap {
+    margin: 0 10px;
+    width: calc(50% - 24px);
   }
   
-  
+  .new-review-wrap h4 {
+    color: #A52A2A;
+    font-weight: 400;
+    letter-spacing: 5px;
+    text-transform: uppercase;
+    line-height: 1.1;
+  }
+
+  .new-review-labels {
+    font-size: 18px;
+  }
+  .new-review-author, .new-review-text, .new-review-rating {
+    width: 100%;
+    margin-bottom: 10px;
+    font-size: 18px;
+  }
+
+  .new-review-btn-wrap {
+    width: 100%;
+    text-align: right;
+  }
+    
+  .new-review-btn {
+    color: #fff;
+    background-color:  #14598A;
+    font-size: 1em;
+  }
+
+
+  .new-review-btn:hover, .new-review-btn:focus {
+    background-color:#A52A2A;
+    color: #fff;
+    text-decoration: none;
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14),
+    0 3px 1px -2px rgba(0, 0, 0, .2),
+    0 1px 5px 0 rgba(0, 0, 0, .12);
+  }
+
+  .new-review-error > p {
+    width: 100%;
+    color: red;
+  }
+
+  #reviews-container h3, .no-review, .new-review-author, .new-review-text, .new-review-btn, .new-review-rating {
+    padding: 10px;
+    border-radius: 5px;
+    border: 0;
+  }
+
   #reviews-list {
     margin: 0;
     padding: 0;
@@ -297,7 +349,7 @@ nav h1 a:focus {
   }
   
   .review-rating {
-    font-size: 20px;
+    font-size: 18px;
     display: inline-block;
     padding: 5px 10px;
     background-color: #A52A2A;
@@ -310,7 +362,7 @@ nav h1 a:focus {
   }
   
   .review-comments {
-    font-size: 20px;
+    font-size: 18px;
     padding: 0 20px;
   }
   
@@ -318,6 +370,7 @@ nav h1 a:focus {
      color: #888;
   }
   
+
   /******************************************/
 
   @media screen and (max-width: 450px) {
@@ -338,25 +391,27 @@ nav h1 a:focus {
   }
 
   @media screen and (max-width: 850px) {
-    .res-img, .rest-info{
+    .res-img, .rest-info {
         width: 100%;
+    }
+    .new-review-wrap {
+      width: calc(100% - 24px);
     }
   }
   
   @media screen and (max-width: 499px) {
     #restaurant-address, #restaurant-hours, #breadcrumb li, #restaurant-cuisine,
-    .review-name, .review-date, .review-rating, .review-comments {
+    .review-name, .review-date, .review-rating, .review-comments, .new-review-wrap > * {
         font-size: 16px;
     }
-    #restaurant-name, 
-    #reviews-container h2 {
+    #restaurant-name, #reviews-container h2 {
       font-size: 1.2rem;
     }
   }
   
   @media screen and (max-width: 399px) {
     #restaurant-address, #restaurant-hours, #breadcrumb li, #restaurant-cuisine,
-    .review-name, .review-date, .review-rating, .review-comments {
+    .review-name, .review-date, .review-rating, .review-comments, .new-review-wrap > * {
         font-size: 14px;
     }
   }

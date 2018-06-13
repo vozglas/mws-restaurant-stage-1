@@ -127,19 +127,138 @@ fillReviewsHTML = (reviews = self.restaurant.reviews) => {
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
   container.appendChild(title);
-
-  if (!reviews) {
+  
+  if (reviews) {
+    const ul = document.getElementById('reviews-list');
+    reviews.forEach(review => {
+      ul.appendChild(createReviewHTML(review));
+    });
+    container.appendChild(ul);
+  } else {
     const noReviews = document.createElement('p');
+    noReviews.className = "no-review";
     noReviews.innerHTML = 'No reviews yet!';
     container.appendChild(noReviews);
-    return;
   }
-  const ul = document.getElementById('reviews-list');
-  reviews.forEach(review => {
-    ul.appendChild(createReviewHTML(review));
-  });
-  container.appendChild(ul);
+
+  addReviewForm();
 }
+
+// add review form
+addReviewForm = () => {
+  const container = document.getElementById('reviews-container');
+
+  const title = document.createElement('h4');
+  title.innerHTML = 'Write a review';
+
+  const newReviewWrap = document.createElement('div');
+  newReviewWrap.className = 'new-review-wrap';
+
+  const newReviewAuthor = document.createElement('input');
+  newReviewAuthor.setAttribute('id', 'newReviewAuthor');
+  newReviewAuthor.className = 'new-review-author';
+  const newReviewAuthorLabel = document.createElement('label');
+  newReviewAuthorLabel.htmlFor = 'newReviewAuthor';
+  newReviewAuthorLabel.innerHTML = 'Your name: ';
+  newReviewAuthorLabel.className = 'new-review-labels';
+  
+
+  const newReviewText = document.createElement('textarea');
+  newReviewText.className = 'new-review-text';
+  newReviewText.setAttribute('id', 'newReviewText');
+  newReviewText.rows = 5;
+  const newReviewTextLabel = document.createElement('label');
+  newReviewTextLabel.htmlFor = 'newReviewText';
+  newReviewTextLabel.innerHTML = 'Your review: ';
+  newReviewTextLabel.className = 'new-review-labels';
+  
+  const newReviewRating = document.createElement('select');
+  newReviewRating.className = 'new-review-rating';
+  newReviewRating.setAttribute('id', 'newReviewRating');
+  const newReviewRatingLabel = document.createElement('label');
+  newReviewRatingLabel.htmlFor = 'newReviewRating';
+  newReviewRatingLabel.innerHTML = 'Your rating: ';
+  newReviewRatingLabel.className = 'new-review-labels';
+  for (let i = 0; i < 6; i++) {
+    const newReviewRatingOption = document.createElement('option');
+    newReviewRatingOption.setAttribute('value', i);
+    i === 0 ? newReviewRatingOption.innerHTML = "... select" : newReviewRatingOption.innerHTML = (i === 1 ?  `${i} star out of 5!` :  `${i} stars out of 5!`);
+    newReviewRating.appendChild(newReviewRatingOption);
+  }
+
+  const newReviewBtnWrap = document.createElement('div');
+  newReviewBtnWrap.className = 'new-review-btn-wrap';
+  const newReviewBtn = document.createElement('button');
+  newReviewBtn.className = 'new-review-btn';
+  newReviewBtn.innerHTML = 'Add a new review';
+  newReviewBtn.addEventListener('click', function() {
+    validateReviewForm();
+  })
+  newReviewBtnWrap.appendChild(newReviewBtn);
+
+  const newReviewError = document.createElement('div');
+  newReviewError.className = 'new-review-error';
+  newReviewError.setAttribute('id', 'newReviewError');
+
+  newReviewWrap.appendChild(title);
+  newReviewWrap.appendChild(newReviewAuthorLabel);
+  newReviewWrap.appendChild(newReviewAuthor);
+  newReviewWrap.appendChild(newReviewTextLabel);
+  newReviewWrap.appendChild(newReviewText);
+  newReviewWrap.appendChild(newReviewRatingLabel);
+  newReviewWrap.appendChild(newReviewRating);
+  newReviewWrap.appendChild(newReviewBtnWrap);
+  newReviewWrap.appendChild(newReviewError);
+
+  container.appendChild(newReviewWrap);
+}
+
+validateReviewForm = () => {
+  clearErrors();
+  let errors = [];
+  const author = document.getElementById('newReviewAuthor');
+  const review = document.getElementById('newReviewText');
+  const rating = document.getElementById('newReviewRating');
+
+  if (author) {
+    if (author.value.trim() === "") errors.push("Enter your name!");
+  }
+  
+  if (review) {
+    if (review.value.trim() === "") errors.push("Write something about this restaurant!");
+  }
+
+  if (rating) {
+    if (rating.value === '0' || rating.value === 0) {
+      errors.push("Rate this restaurant!");
+    }
+  }
+  
+
+  errors.length === 0 ? addReview() : showErrors(errors);
+
+}
+
+clearErrors = () => {
+  const errorWrapper = document.getElementById('newReviewError');
+  errorWrapper.innerHTML = "";
+}
+
+addReview = (author, review, rating) => {
+
+  
+}
+
+showErrors  = (errors) => {
+  const errorWrapper = document.getElementById('newReviewError');
+  for (error of errors) {
+    const p = document.createElement('p');
+    const textNode = document.createTextNode(error);
+    p.appendChild(textNode);
+    errorWrapper.appendChild(p);
+  }
+}
+  
 
 /**
  * Create review HTML and add it to the webpage.
