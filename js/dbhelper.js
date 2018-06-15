@@ -14,9 +14,13 @@ class DBHelper {
       return Promise.resolve();
     }
   
-    return idb.open('restDB', 2, function(upgradeDb) {
-      const restaurantsStore = upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
-      const reviewsStore = upgradeDb.createObjectStore('reviews', { keyPath: 'id' });
+    return idb.open('restDB', 1, function(upgradeDb) {
+      switch (upgradeDb.oldVersion) {
+        case 0:
+          upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
+          const reviewsStore = upgradeDb.createObjectStore('reviews', { keyPath: 'id', autoIncrement:true });
+          reviewsStore.createIndex('reviews', 'restaurant_id');   
+      }
     });
   }
 
@@ -24,38 +28,44 @@ class DBHelper {
   /**
    * Fetch all restaurants.
    */
-  static fetchRestaurants() {
+    static fetchRestaurants() {
+      return DBHelper.openRestIdb().then(db => {
+        if (!db) return DBHelper.getAllRestaurantsFromNetwork();
+        return db.transaction('restaurants').objectStore('restaurants').getAll();
+      })
+    }
+  
+   
+  static fetchAllReviews() {
     return DBHelper.openRestIdb().then(db => {
-      if (!db) {
-        // fetch restaurants from network
-        return DBHelper.getAllRestaurantsFromNetwork();
-      } else {
-        return db.transaction('restaurants').objectStore('restaurants').count().then(count => {
-          if (count > 0) {
-            // get restaurants from DB
-            return db.transaction('restaurants').objectStore('restaurants').getAll();
+      if (db) {
+        return db.transaction('reviews').objectStore('reviews').count().then(count => {
+          if (count === 0) {
+            //nothing in DB. Fetching from network and store in DB
+            return DBHelper.getAllReviewsFromNetwork().then(reviews => {
+              for (const r of reviews) {
+                db.transaction('reviews', 'readwrite').objectStore('reviews').put(r);
+              }
+              return db.transaction('reviews').objectStore('reviews').getAll();
+            })
           } else {
-            // fetch restaurants from network and update DB
-            return DBHelper.updateDB();  
-          }
+            return db.transaction('reviews').objectStore('reviews').getAll();
+          }         
         })
       }
     })
   }
 
-  static fetchReviews() {
+  static fetchReviewsByRestaurantId(restaurantId) {
     return DBHelper.openRestIdb().then(db => {
-      if(!db) {
-        // fetch reviews from network
-
-      } else {
-        
+      if(db) {
+        return db.transaction('reviews').objectStore('reviews').index('reviews').getAll(restaurantId);
       }
-    })
+    });
   }
 
   static getAllRestaurantsFromNetwork() {
-    return fetch(`${this.DATABASE_URL}/restaurants`).then(response => {
+    return fetch(`${this.DATABASE_URL}/restaurants/`).then(response => {
       return response.json();
     }).catch(error => {
       console.log(`fetch restaurants from network error!`);
@@ -63,19 +73,41 @@ class DBHelper {
     })
   }
 
-  static updateDB() {
+  static updateRestDB(dbArray = []) {
+    let update = false;
     return DBHelper.openRestIdb().then(db => {
       if (db) {
         return DBHelper.getAllRestaurantsFromNetwork().then(restaurants => {
-          for (const r of restaurants) {
-            db.transaction('restaurants', 'readwrite').objectStore('restaurants').put(r);
+          let arrToAdd = restaurants.filter(elem => {
+            return DBHelper.checkArray(dbArray, elem);
+          });
+          for (const rest of arrToAdd) {
+            update = true;
+            db.transaction('restaurants', 'readwrite').objectStore('restaurants').put(rest);
           }
-        }).then(() => {
-          return db.transaction('restaurants').objectStore('restaurants').getAll();
-        })  
+          return update;      
+        })
       }
     })
   }
+
+  static getAllReviewsFromNetwork() {
+    return fetch(`${this.DATABASE_URL}/reviews/`).then(response => {
+      return response.json();
+    }).catch(error => {
+      console.log(`fetch reviews from network error!`);
+      console.log(error);
+    })
+  }
+
+  static checkArray(arrayToCheck, elem) {
+    let addElem = true;
+    for (const checkElem of arrayToCheck) {
+      if (checkElem.id === elem.id)  addElem = false;
+    }
+    return addElem;
+  }
+
 
   /**
    * Fetch a restaurant by its ID.
@@ -86,7 +118,7 @@ class DBHelper {
         return fetch(`${this.DATABASE_URL}/restaurants/${id}`).then(response => {
               return response.json();
             }).catch(error => {
-              console.log(`Fetch restaurant by ID error!`)
+              console.log(`${error}: Fetch restaurant by ID error!`)
             })        
       } else {
         // get restaurant from DB
@@ -219,13 +251,37 @@ class DBHelper {
   }
 
 
-
+  // Add new review
   static addNewReview(review) {
-    return fetch(`${this.DATABASE_URL}/reviews` , {
+    // 1. write review to IDB
+    return DBHelper.openRestIdb().then(db => {
+      if (db) {
+        db.transaction('reviews', 'readwrite').objectStore('reviews').put(review).then(response => {
+          return response;
+        })
+      }
+    })
+    // 2. write action to temp object store (object type, id, action)
+
+    // 3. POST 
+
+    // 4. 200 OK ? delete from temp object store : leave it until we're online
+
+    /* return fetch(`${this.DATABASE_URL}/reviews` , {
       method: 'POST',
       body: JSON.stringify(review)
-    }).catch(error => {
-      console.log(error);
+    }).then(response => {
+      
     })
+    .catch(error => {
+      console.log(error);
+    }) */
   }
+
+  // update reviews in IDB
+  static updateReviewsDB(reviewId, action) {
+      
+  }
+
 }
+

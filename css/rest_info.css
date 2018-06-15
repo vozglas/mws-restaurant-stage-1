@@ -243,16 +243,17 @@ nav h1 a:focus {
   }
 
   .new-review-wrap {
-    margin: 0 10px;
+    margin:auto;
     width: calc(50% - 24px);
   }
   
   .new-review-wrap h4 {
     color: #A52A2A;
     font-weight: 400;
-    letter-spacing: 5px;
+    letter-spacing: 3px;
     text-transform: uppercase;
     line-height: 1.1;
+    text-align: center;
   }
 
   .new-review-labels {
@@ -394,9 +395,6 @@ nav h1 a:focus {
     .res-img, .rest-info {
         width: 100%;
     }
-    .new-review-wrap {
-      width: calc(100% - 24px);
-    }
   }
   
   @media screen and (max-width: 499px) {
@@ -420,5 +418,11 @@ nav h1 a:focus {
     #reviews-list li {
         display: inline-block;
         width: calc(100% * (1/2) - 24px); /* border 2px + 10px margin */
+    }
+  }
+
+  @media screen and (max-width: 800px) {
+    .new-review-wrap {
+      width: calc(100% - 24px);
     }
   }

@@ -86,7 +86,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     fillRestaurantHoursHTML();
   }
   // fill reviews
-  fillReviewsHTML();
+  DBHelper.fetchReviewsByRestaurantId(restaurant.id).then(reviews => {
+    fillReviewsHTML(reviews);
+  })
+  
 }
 
 // create source for <picture>
@@ -121,7 +124,7 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews = self.restaurant.reviews) => {
+fillReviewsHTML = (reviews="") => {
   const container = document.getElementById('reviews-container');
   const title = document.createElement('h3');
   title.innerHTML = 'Reviews';
@@ -234,16 +237,27 @@ validateReviewForm = () => {
     if (ratingElem.value === '0' || ratingElem.value === 0) {
       errors.push("Rate this restaurant!");
     } else {
-      rating = ratingElem.value;
+      rating = parseInt(ratingElem.value);
     }
   }
-  const restaurant_id = getParameterByName('id');
-  errors.length === 0 ? addReview({restaurant_id, name, rating, comments}) : showErrors(errors);
+  const restaurant_id = parseInt(getParameterByName('id'));
+  const createdAt = new Date().getTime();
+  const updatedAt = new Date().getTime();
+  errors.length === 0 ? addReview({restaurant_id, name, createdAt, updatedAt,comments, rating}) : showErrors(errors);
 }
 
 clearErrors = () => {
   const errorWrapper = document.getElementById('newReviewError');
   errorWrapper.innerHTML = "";
+}
+
+addReview = (review) => {
+  DBHelper.addNewReview(review);
+  cleanReviewForm();
+    // update reviews on page
+    DBHelper.fetchReviewsByRestaurantId(review.restaurant_id).then(reviews => {
+      fillReviewsHTML(reviews);
+    })
 }
 
 cleanReviewForm = () => {
@@ -253,11 +267,6 @@ cleanReviewForm = () => {
   review.value = "";
   const rating = document.getElementById('newReviewRating');
   rating.value = 0;
-}
-
-addReview = (review) => {
-  DBHelper.addNewReview(review);
-  cleanReviewForm();
 }
 
 showErrors  = (errors) => {
@@ -285,7 +294,9 @@ createReviewHTML = (review) => {
 
   const date = document.createElement('p');
   date.className = 'review-date';
-  date.innerHTML = review.date;
+  
+  const formatedDate = formatDate(new Date(review.createdAt));
+  date.innerHTML = formatedDate;
 
   reviewHead.className = 'review-head';
   reviewHead.appendChild(name);
@@ -359,4 +370,19 @@ getParameterByName = (name, url) => {
   if (!results[2])
     return '';
   return decodeURIComponent(results[2].replace(/\+/g, ' '));
+}
+
+formatDate = (date) => {
+  const monthNames = [
+    "January", "February", "March",
+    "April", "May", "June", "July",
+    "August", "September", "October",
+    "November", "December"
+  ];
+
+  const day = date.getDate();
+  const monthIndex = date.getMonth();
+  const year = date.getFullYear();
+
+  return `${monthNames[monthIndex]} ${day} ${year}`;
 }
