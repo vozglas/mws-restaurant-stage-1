@@ -367,9 +367,43 @@ nav h1 a:focus {
     padding: 0 20px;
   }
   
+  .review-footer-container {
+    position: absolute;
+    width: 100%;
+    text-align:  right;
+    bottom: 0px;
+    margin: auto;
+  }
+
+  .review-btn-link-delete,  .review-btn-link-edit{
+    background:none!important;
+    border:none; 
+    padding:0!important;
+    text-transform:  uppercase;
+    font-size: .8em;
+    font-weight: 700;
+    font-family: roboto, Arial, Helvetica, sans-serif;
+    text-decoration: underline;
+    cursor:pointer;
+    margin: 0 15px;
+  }
+
+  .review-btn-link-delete {
+    color:red;
+  }
+
+  .review-btn-link-edit {
+    color:#14598A;
+  }
+
+  .review-btn-link-delete:hover, .review-btn-link-edit:hover{
+    text-decoration: none;
+  }
+
   .rating-no-stars{
      color: #888;
   }
+  
   
 
   /******************************************/
@@ -422,6 +456,9 @@ nav h1 a:focus {
   }
 
   @media screen and (max-width: 800px) {
+    #reviews-list li {
+      width: 100%;
+    }
     .new-review-wrap {
       width: calc(100% - 24px);
     }

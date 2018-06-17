@@ -13,8 +13,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
   registerSW();
   fetchNeighborhoods();
   fetchCuisines();
-  DBHelper.fetchAllReviews();
-  DBHelper.fetchReviewsByRestaurantId(2);
+  //DBHelper.fetchAllReviews();
 });
 
 /**

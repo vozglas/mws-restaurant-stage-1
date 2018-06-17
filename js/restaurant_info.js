@@ -8,7 +8,6 @@ registerSW();
  * Initialize Google map, called from HTML.
  */
 window.initMap = () => {
-  //registerSW();
   fetchRestaurantFromURL((error, restaurant) => {
     if (error) { // Got an error!
       console.error(error);
@@ -23,6 +22,9 @@ window.initMap = () => {
     }
   });
 }
+
+
+
 
 /**
  * Get current restaurant from page URL.
@@ -88,6 +90,10 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   // fill reviews
   DBHelper.fetchReviewsByRestaurantId(restaurant.id).then(reviews => {
     fillReviewsHTML(reviews);
+    // check if there are new reviews, add them to IDB and refresh the reviews container
+    DBHelper.updateReviewsDB(reviews, restaurant.id).then(update => {
+      if (update === true) DBHelper.fetchReviewsByRestaurantId(restaurant.id);
+    })
   })
   
 }
@@ -142,7 +148,6 @@ fillReviewsHTML = (reviews="") => {
     noReviews.innerHTML = 'No reviews yet!';
     container.appendChild(noReviews);
   }
-
   addReviewForm();
 }
 
@@ -256,6 +261,8 @@ addReview = (review) => {
   cleanReviewForm();
     // update reviews on page
     DBHelper.fetchReviewsByRestaurantId(review.restaurant_id).then(reviews => {
+      const reviewForm = document.getElementsByClassName('new-review-wrap');
+      reviewForm[0].parentNode.removeChild(reviewForm[0]);
       fillReviewsHTML(reviews);
     })
 }
@@ -335,13 +342,24 @@ createReviewHTML = (review) => {
   rating.appendChild(stars);
   rating.appendChild(noStars);
 
-  //rating.innerHTML = strStars;/* `Rating: ${review.rating}`; */
   li.appendChild(rating);
 
   const comments = document.createElement('p');
   comments.className = 'review-comments';
   comments.innerHTML = review.comments;
   li.appendChild(comments);
+
+  const footer = document.createElement('p');
+  footer.className = 'review-footer-container';
+  const btnDelete = document.createElement('button');
+  btnDelete.className = 'review-btn-link-delete';
+  btnDelete.innerHTML = `delete`;
+  const btnEdit = document.createElement('button');
+  btnEdit.className = 'review-btn-link-edit';
+  btnEdit.innerHTML = `edit`;
+  footer.appendChild(btnDelete);
+  footer.appendChild(btnEdit);
+  li.appendChild(footer);
 
   return li;
 }
@@ -384,5 +402,5 @@ formatDate = (date) => {
   const monthIndex = date.getMonth();
   const year = date.getFullYear();
 
-  return `${monthNames[monthIndex]} ${day} ${year}`;
+  return `${monthNames[monthIndex]} - ${day} - ${year}`;
 }
