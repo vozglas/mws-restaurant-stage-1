@@ -89,7 +89,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
   }
   // fill reviews
   DBHelper.fetchReviewsByRestaurantId(restaurant.id).then(reviews => {
-    fillReviewsHTML(reviews);
+    return fillReviewsHTML(reviews);
     // check if there are new reviews, add them to IDB and refresh the reviews container
     DBHelper.updateReviewsDB(reviews, restaurant.id).then(update => {
       if (update === true) DBHelper.fetchReviewsByRestaurantId(restaurant.id);
