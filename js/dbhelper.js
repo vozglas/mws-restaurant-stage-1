@@ -225,7 +225,7 @@ class DBHelper {
             DBHelper.postReviewNetwork(review).then(response => {
               // 4. CREATED 201 OK ? delete from temp object store : leave it until we're online and post
               if (response.status >= 200 && response.status < 300) {
-                deleteAction(db, reviewId);
+                DBHelper.deleteAction(db, reviewId);
               }
             })
           })
