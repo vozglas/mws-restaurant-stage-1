@@ -142,8 +142,11 @@ class DBHelper {
   }
 
   static getAllReviewsFromNetwork(restaurantId) {
-    return fetch(`${this.DATABASE_URL}/reviews/?restaurant_id=${restaurantId}`).then(response => {
-      return response.json();
+    return fetch(`${this.DATABASE_URL}/reviews/?restaurant_id=${restaurantId}`).then(reviews => {
+      // here we're 100% online. fire failed requests!
+      return DBHelper.executeFailedRequests().then(response => {
+        return reviews.json();
+      });
     }).catch(error => {
       console.log(`fetch reviews from network error!`);
       console.log(error);
@@ -219,10 +222,10 @@ class DBHelper {
           // 2. write action to temp object store (id, action)
           db.transaction('reviewAction', 'readwrite').objectStore('reviewAction').put({'id': reviewId, 'action': 'newReview'}).then(response => {
             // 3. POST to network
-            postReview(review).then(response => {
+            DBHelper.postReviewNetwork(review).then(response => {
               // 4. CREATED 201 OK ? delete from temp object store : leave it until we're online and post
               if (response.status >= 200 && response.status < 300) {
-                db.transaction('reviewAction', 'readwrite').objectStore('reviewAction').delete(reviewId);
+                deleteAction(db, reviewId);
               }
             })
           })
@@ -233,7 +236,7 @@ class DBHelper {
     })
   }
 
-  static postReview(review) {
+  static postReviewNetwork(review) {
     return fetch(`${this.DATABASE_URL}/reviews` , {
       method: 'POST',
       body: JSON.stringify(review)
@@ -252,8 +255,13 @@ class DBHelper {
 
   }
 
-  static updateReviewsActionDB(reviewId, action) {
-      
+  static deleteReviewNetwork(reviewId) {
+
+  }
+
+  // delete failed request from TMP objectStore
+  static deleteAction(db, actionId) {
+    if (db) db.transaction('reviewAction', 'readwrite').objectStore('reviewAction').delete(actionId);
   }
 
   // execute failed requests when we're finaly online
@@ -261,7 +269,24 @@ class DBHelper {
     return DBHelper.openRestIdb().then(db => {
       if (db) {
         db.transaction('reviewAction').objectStore('reviewAction').getAll().then(response=> {
-          console.log(response);
+          for (const action of response) {
+            switch(action.action) {
+              case "newReview" : {
+                return db.transaction('reviews').objectStore('reviews').get(action.id).then(review => {
+                  return DBHelper.postReviewNetwork(review).then(response => {
+                    if (response.status >= 200 && response.status < 300) {
+                      DBHelper.deleteAction(db, action.id);
+                    }
+                  });
+                }).catch(error => {
+                  console.log(error);
+                })
+              }
+              case "deleteReview": DBHelper.deleteReviewNetwork(reviewId);
+                break;
+              }
+            }
+          return Promise.resolve();
         })
       }
     })

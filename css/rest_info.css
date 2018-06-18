@@ -294,7 +294,6 @@ nav h1 a:focus {
   #reviews-container h3, .no-review, .new-review-author, .new-review-text, .new-review-btn, .new-review-rating {
     padding: 10px;
     border-radius: 5px;
-    border: 0;
   }
 
   #reviews-list {
@@ -304,9 +303,9 @@ nav h1 a:focus {
     flex-wrap: wrap;
   }
   
-  #reviews-list li:last-child {
+  /* #reviews-list li:last-child {
     margin-bottom: 80px;
-  }
+  } */
   
   #reviews-list li {
     background-color: #fff;
@@ -365,6 +364,7 @@ nav h1 a:focus {
   .review-comments {
     font-size: 18px;
     padding: 0 20px;
+    margin-bottom: 30px;
   }
   
   .review-footer-container {
@@ -373,12 +373,13 @@ nav h1 a:focus {
     text-align:  right;
     bottom: 0px;
     margin: auto;
+    padding-top: 10px;
   }
 
   .review-btn-link-delete,  .review-btn-link-edit{
     background:none!important;
     border:none; 
-    padding:0!important;
+    padding:0 !important;
     text-transform:  uppercase;
     font-size: .8em;
     font-weight: 700;

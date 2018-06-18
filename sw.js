@@ -1,4 +1,4 @@
-const cahceVersion = "3";
+const cahceVersion = "1"; 
 
 const staticCacheName = 'rest-review-v' + cahceVersion; 
 const imageCache = 'rest-images-v' + cahceVersion;

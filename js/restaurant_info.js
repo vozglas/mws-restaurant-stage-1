@@ -88,14 +88,19 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
     fillRestaurantHoursHTML();
   }
   // fill reviews
+  // first get reviews from IDB
   DBHelper.fetchReviewsByRestaurantId(restaurant.id).then(reviews => {
-    return fillReviewsHTML(reviews);
-    // check if there are new reviews, add them to IDB and refresh the reviews container
-    DBHelper.updateReviewsDB(reviews, restaurant.id).then(update => {
-      if (update === true) DBHelper.fetchReviewsByRestaurantId(restaurant.id);
+    fillReviewsHTML(reviews).then(response => {
+      // check if there are new reviews, add them to IDB and refresh the reviews container
+      return DBHelper.updateReviewsDB(reviews, restaurant.id).then(update => {
+        if (update === true) DBHelper.fetchReviewsByRestaurantId(restaurant.id).then(reviews => {
+          fillReviewsHTML(reviews);
+        })
+      })
     })
   })
-  
+
+
 }
 
 // create source for <picture>
@@ -127,19 +132,21 @@ fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => 
   }
 }
 
+
 /**
  * Create all reviews HTML and add them to the webpage.
  */
-fillReviewsHTML = (reviews="") => {
+fillReviewsHTML = (reviews) => {
+  resetReviews();
+
   const container = document.getElementById('reviews-container');
-  const title = document.createElement('h3');
-  title.innerHTML = 'Reviews';
-  container.appendChild(title);
-  
+  const title = document.getElementById('reviewsTitle');
+
   if (reviews) {
     const ul = document.getElementById('reviews-list');
     reviews.forEach(review => {
       ul.appendChild(createReviewHTML(review));
+      restaurantId = review.restaurantId;
     });
     container.appendChild(ul);
   } else {
@@ -149,6 +156,17 @@ fillReviewsHTML = (reviews="") => {
     container.appendChild(noReviews);
   }
   addReviewForm();
+  return Promise.resolve();
+}
+
+// clear reviews container
+resetReviews = (reviews) => {
+  // Remove all reviews
+  const ul = document.getElementById('reviews-list');
+  ul.innerHTML = '';
+  // remove new review form
+  const newReviewWrap = document.getElementById('new-review-wrap');
+  newReviewWrap.innerHTML = '';
 }
 
 // add review form
@@ -158,7 +176,7 @@ addReviewForm = () => {
   const title = document.createElement('h4');
   title.innerHTML = 'Write a review';
 
-  const newReviewWrap = document.createElement('div');
+  const newReviewWrap = document.getElementById('new-review-wrap'); // document.createElement('div');
   newReviewWrap.className = 'new-review-wrap';
 
   const newReviewAuthor = document.createElement('input');
@@ -166,7 +184,7 @@ addReviewForm = () => {
   newReviewAuthor.className = 'new-review-author';
   const newReviewAuthorLabel = document.createElement('label');
   newReviewAuthorLabel.htmlFor = 'newReviewAuthor';
-  newReviewAuthorLabel.innerHTML = 'Your name: ';
+  newReviewAuthorLabel.innerHTML = 'Enter your name: ';
   newReviewAuthorLabel.className = 'new-review-labels';
   
 
@@ -176,7 +194,7 @@ addReviewForm = () => {
   newReviewText.rows = 5;
   const newReviewTextLabel = document.createElement('label');
   newReviewTextLabel.htmlFor = 'newReviewText';
-  newReviewTextLabel.innerHTML = 'Your review: ';
+  newReviewTextLabel.innerHTML = 'Write a review: ';
   newReviewTextLabel.className = 'new-review-labels';
   
   const newReviewRating = document.createElement('select');
@@ -184,12 +202,12 @@ addReviewForm = () => {
   newReviewRating.setAttribute('id', 'newReviewRating');
   const newReviewRatingLabel = document.createElement('label');
   newReviewRatingLabel.htmlFor = 'newReviewRating';
-  newReviewRatingLabel.innerHTML = 'Your rating: ';
+  newReviewRatingLabel.innerHTML = 'Restaurant rating: ';
   newReviewRatingLabel.className = 'new-review-labels';
   for (let i = 0; i < 6; i++) {
     const newReviewRatingOption = document.createElement('option');
     newReviewRatingOption.setAttribute('value', i);
-    i === 0 ? newReviewRatingOption.innerHTML = "... select" : newReviewRatingOption.innerHTML = (i === 1 ?  `${i} star out of 5!` :  `${i} stars out of 5!`);
+    i === 0 ? newReviewRatingOption.innerHTML = "..." : newReviewRatingOption.innerHTML = (i === 1 ?  `${i} star out of 5!` :  `${i} stars out of 5!`);
     newReviewRating.appendChild(newReviewRatingOption);
   }
 
@@ -248,7 +266,8 @@ validateReviewForm = () => {
   const restaurant_id = parseInt(getParameterByName('id'));
   const createdAt = new Date().getTime();
   const updatedAt = new Date().getTime();
-  errors.length === 0 ? addReview({restaurant_id, name, createdAt, updatedAt,comments, rating}) : showErrors(errors);
+  errors.length === 0 ? addReview({restaurant_id: restaurant_id, 
+                                    name: name, createdAt: createdAt, updatedAt: updatedAt, comments: comments, rating: rating}) : showErrors(errors);
 }
 
 clearErrors = () => {
@@ -261,8 +280,6 @@ addReview = (review) => {
   cleanReviewForm();
     // update reviews on page
     DBHelper.fetchReviewsByRestaurantId(review.restaurant_id).then(reviews => {
-      const reviewForm = document.getElementsByClassName('new-review-wrap');
-      reviewForm[0].parentNode.removeChild(reviewForm[0]);
       fillReviewsHTML(reviews);
     })
 }
