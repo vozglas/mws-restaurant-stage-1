@@ -9,8 +9,8 @@ function openModal (dlgId, lastFocusedElement, action) {
     modal = document.getElementById(dlgId);
     modal.style.display = "block";
     
-    const btnClose = modal.getElementsByClassName('modal-button-danger')[0];
-    const btnOk = modal.getElementsByClassName('modal-button-ok')[0];
+    const btnClose = modal.getElementsByClassName('modal-button-cancel')[0];
+    const btnOk = modal.getElementsByClassName('modal-button-danger')[0];
     
     const objId = document.getElementById('hidObjId').value;
 

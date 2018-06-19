@@ -3,7 +3,7 @@
     display: none;
     position: fixed;
     z-index: 1; 
-    padding-top: 150px; 
+    padding-top: 30vh; 
     left: 0;
     top: 0;
     width: 100%; 
@@ -34,14 +34,16 @@
     to {top:0; opacity:1}
 }
 
-.modal-button-danger, .modal-button-ok {
+.modal-button-danger, .modal-button-ok, .modal-button-cancel {
     border-radius: 5px;
     padding: 10px;
     width: 100px;
     border: none;
 }
 
-.modal-button-danger:hover, .modal-button-danger:focus, .modal-button-ok:hover, .modal-button-ok:focus {
+.modal-button-danger:hover, .modal-button-danger:focus, 
+.modal-button-ok:hover, .modal-button-ok:focus, 
+.modal-button-cancel:hover, .modal-button-cancel:focus {
     box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
 }
 
@@ -57,4 +59,9 @@
 .modal-button-ok {
     color: white; 
     background-color: rgb(2, 109, 2);
+}
+
+.modal-button-cancel {
+    color: white;
+    background-color: grey;
 }

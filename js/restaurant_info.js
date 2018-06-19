@@ -415,15 +415,15 @@ makeDlg = (objId) => {
   modalContentText.className = 'modal-upper-text';
   modalContentText.innerHTML = `Delete the review? Are you sure?`;
   const btnNo = document.createElement('button');
-  btnNo.className = 'modal-button-danger';
+  btnNo.className = 'modal-button-cancel';
   btnNo.innerHTML = `No!`;
-  const btnOk = document.createElement('button');
-  btnOk.className = 'modal-button-ok';
-  btnOk.innerHTML = `Yes`;
+  const btnDelete = document.createElement('button');
+  btnDelete.className = 'modal-button-danger';
+  btnDelete.innerHTML = `Yes`;
 
   modalContent.appendChild(hidObjId);
   modalContent.appendChild(modalContentText);
-  modalContent.appendChild(btnOk);
+  modalContent.appendChild(btnDelete);
   modalContent.appendChild(btnNo);
 
   modal.appendChild(modalContent);
