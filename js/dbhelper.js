@@ -245,7 +245,7 @@ class DBHelper {
 
   static deleteReview(reviewId) {
     // 1. delete review from IDB
-
+    
     // 2. write action to temp object store (object type, id, action)
 
     // 3. DELETE 

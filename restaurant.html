@@ -6,6 +6,7 @@
   <meta charset="utf-8">
   <meta name="theme-color" content="#14598A">
   <link rel="stylesheet" href="css/rest_info.css" type="text/css">
+  <link rel="stylesheet" href="css/modal.css" type="text/css">
   <link rel="manifest" href="/manifest.webmanifest">
   <title>Restaurant Info</title>
 </head>
@@ -45,8 +46,21 @@
     Copyright (c) 2018 <a href="/"><strong>Restaurant Reviews</strong></a> All Rights Reserved.
   </footer>
 
+  <div id='dlgDeleteReview' class='modal'>
+    <div class='modal-content'>
+      <div class='modal-upper-text'>Delete the review? Are you sure?</div>
+      <div>
+        <button id='dlgBtnCancelDeleteReview' class='modal-button-danger'>No!</button>
+      </div>
+      <div>
+        <button id='dlgBtnDeleteReview' class='modal-button-ok'>Yes.</button>
+      </div>      
+    </div>
+  </div>
+
   <script type="application/javascript" charset="utf-8" src="js/sw_reg.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
+  <script type="application/javascript" charset="utf-8" src="js/modal.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/restaurant_info.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/idb.js"></script>
   <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKRIkODyl52K4XmRBW7ezKhzIHJeF6Wpo&libraries=places&callback=initMap"></script>

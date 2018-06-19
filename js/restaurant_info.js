@@ -371,6 +371,10 @@ createReviewHTML = (review) => {
   const btnDelete = document.createElement('button');
   btnDelete.className = 'review-btn-link-delete';
   btnDelete.innerHTML = `delete`;
+  btnDelete.addEventListener('click', function() {
+    openModal('dlgDeleteReview', document.activeElement);
+  })
+
   const btnEdit = document.createElement('button');
   btnEdit.className = 'review-btn-link-edit';
   btnEdit.innerHTML = `edit`;
