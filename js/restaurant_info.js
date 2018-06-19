@@ -58,6 +58,10 @@ fetchRestaurantFromURL = (callback) => {
  * Create restaurant HTML and add it to the webpage
  */
 fillRestaurantHTML = (restaurant = self.restaurant) => {
+  // try to execute all failed requests when we were offline!
+  DBHelper.executeFailedRequests();
+
+
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
 
@@ -275,13 +279,22 @@ clearErrors = () => {
   errorWrapper.innerHTML = "";
 }
 
+
 addReview = (review) => {
-  DBHelper.addNewReview(review);
+  DBHelper.addNewReviewDB(review);
   cleanReviewForm();
-    // update reviews on page
-    DBHelper.fetchReviewsByRestaurantId(review.restaurant_id).then(reviews => {
-      fillReviewsHTML(reviews);
-    })
+  // update reviews on page
+  DBHelper.fetchReviewsByRestaurantId(review.restaurant_id).then(reviews => {
+    fillReviewsHTML(reviews);
+  })
+}
+
+deleteReview = (reviewId) => {
+  DBHelper.deleteReviewDB(reviewId);
+  const restaurantId = parseInt(getParameterByName('id'));
+  DBHelper.fetchReviewsByRestaurantId(restaurantId).then(reviews => {
+    fillReviewsHTML(reviews);
+  })
 }
 
 cleanReviewForm = () => {
@@ -371,9 +384,12 @@ createReviewHTML = (review) => {
   const btnDelete = document.createElement('button');
   btnDelete.className = 'review-btn-link-delete';
   btnDelete.innerHTML = `delete`;
+  
   btnDelete.addEventListener('click', function() {
-    openModal('dlgDeleteReview', document.activeElement);
+    makeDlg(review.id);
+    openModal('dlgModal', document.activeElement, 'deleteReview');
   })
+
 
   const btnEdit = document.createElement('button');
   btnEdit.className = 'review-btn-link-edit';
@@ -384,6 +400,36 @@ createReviewHTML = (review) => {
 
   return li;
 }
+
+/* create modal dialog */
+makeDlg = (objId) => {
+  const modal = document.getElementById('dlgModal');
+  modal.innerHTML = "";
+  const modalContent = document.createElement('div');
+  modalContent.className = 'modal-content';
+  const hidObjId = document.createElement('input');
+  hidObjId.setAttribute("type", "hidden");
+  hidObjId.setAttribute("id", "hidObjId");
+  hidObjId.value = objId;
+  const modalContentText = document.createElement('div');
+  modalContentText.className = 'modal-upper-text';
+  modalContentText.innerHTML = `Delete the review? Are you sure?`;
+  const btnNo = document.createElement('button');
+  btnNo.className = 'modal-button-danger';
+  btnNo.innerHTML = `No!`;
+  const btnOk = document.createElement('button');
+  btnOk.className = 'modal-button-ok';
+  btnOk.innerHTML = `Yes`;
+
+  modalContent.appendChild(hidObjId);
+  modalContent.appendChild(modalContentText);
+  modalContent.appendChild(btnOk);
+  modalContent.appendChild(btnNo);
+
+  modal.appendChild(modalContent);
+}
+
+
 
 /**
  * Add restaurant name to the breadcrumb navigation menu

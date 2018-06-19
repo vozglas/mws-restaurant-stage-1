@@ -4,13 +4,25 @@ let lastTabStop = null;
 let modal = null;
 let focusOnExit = null;
 
-function openModal (dlgId, lastFocusedElement) {
+function openModal (dlgId, lastFocusedElement, action) {
     focusOnExit = lastFocusedElement;
     modal = document.getElementById(dlgId);
     modal.style.display = "block";
     
     const btnClose = modal.getElementsByClassName('modal-button-danger')[0];
+    const btnOk = modal.getElementsByClassName('modal-button-ok')[0];
     
+    const objId = document.getElementById('hidObjId').value;
+
+    btnOk.addEventListener('click', function() {
+        switch(action) {
+            case 'deleteReview': 
+            deleteReview(objId);
+            modal.style.display = "none";
+            break;
+        }
+    })
+
     // When the user clicks on cancel buttom, close the modal
     btnClose.addEventListener('click', function() {
         closeModal();
@@ -36,7 +48,7 @@ function openModal (dlgId, lastFocusedElement) {
     lastTabStop = focusableElements[focusableElements.length - 1];
     
     // focusing on first stop
-    firstTabStop.focus();
+    lastTabStop.focus();
 }
 
 

@@ -14,13 +14,12 @@ class DBHelper {
       return Promise.resolve();
     }
   
-    return idb.open('restDB', 2, function(upgradeDb) {
+    return idb.open('restDB', 1, function(upgradeDb) {
       switch (upgradeDb.oldVersion) {
         case 0:
           upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
           const reviewsStore = upgradeDb.createObjectStore('reviews', { keyPath: 'id', autoIncrement:true });
-          reviewsStore.createIndex('reviews', 'restaurant_id');   
-        case 1:
+          reviewsStore.createIndex('reviewsByIndex', 'restaurant_id');   
           upgradeDb.createObjectStore('reviewAction', { keyPath: 'id'})
       }
     });
@@ -133,46 +132,18 @@ class DBHelper {
   }    
 
 /*--------------------------------------------- RESTAURANT INFO PAGE----------------------------------------------------------------*/
-  static fetchReviewsByRestaurantId(restaurantId) {
-    return DBHelper.openRestIdb().then(db => {
-      if(db) {
-        return db.transaction('reviews').objectStore('reviews').index('reviews').getAll(restaurantId);
-      }
-    });
-  }
+
 
   static getAllReviewsFromNetwork(restaurantId) {
     return fetch(`${this.DATABASE_URL}/reviews/?restaurant_id=${restaurantId}`).then(reviews => {
-      // here we're 100% online. fire failed requests!
-      return DBHelper.executeFailedRequests().then(response => {
         return reviews.json();
-      });
     }).catch(error => {
       console.log(`fetch reviews from network error!`);
       console.log(error);
     })
   }
 
-  static updateReviewsDB(dbArray = [], restaurantId) {
-    let update = false;
-    return DBHelper.openRestIdb().then(db => {
-      if (db) {
-        return DBHelper.getAllReviewsFromNetwork(restaurantId).then(reviews => {
-          let arrToAdd = reviews.filter(elem => {
-            return DBHelper.checkArray(dbArray, elem);
-          });
-          for (const review of arrToAdd) {
-            update = true;
-            db.transaction('reviews', 'readwrite').objectStore('reviews').put(review);
-          }
-          return update;      
-        })
-      }
-    })
-  } 
-
-
-  /**
+    /**
    * Fetch a restaurant by its ID.
    */
   static fetchRestaurantById(id) {
@@ -211,10 +182,35 @@ class DBHelper {
    */
   static urlForRestaurant(restaurant) {
     return (`./restaurant.html?id=${restaurant.id}`);
+  }  
+
+static fetchReviewsByRestaurantId(restaurantId) {
+    return DBHelper.openRestIdb().then(db => {
+      if(db) {
+        return db.transaction('reviews').objectStore('reviews').index('reviewsByIndex').getAll(restaurantId);
+      }
+    });
   }
+  static updateReviewsDB(dbArray = [], restaurantId) {
+    let update = false;
+    return DBHelper.openRestIdb().then(db => {
+      if (db) {
+        return DBHelper.getAllReviewsFromNetwork(restaurantId).then(reviews => {
+          let arrToAdd = reviews.filter(elem => {
+            return DBHelper.checkArray(dbArray, elem);
+          });
+          for (const review of arrToAdd) {
+            update = true;
+            db.transaction('reviews', 'readwrite').objectStore('reviews').put(review);
+          }
+          return update;      
+        })
+      }
+    })
+  } 
 
   // Add new review
-  static addNewReview(review) {
+  static addNewReviewDB(review) {
     return DBHelper.openRestIdb().then(db => {
       if (db) {
         // 1. write review to IDB
@@ -243,25 +239,35 @@ class DBHelper {
     });
   }
 
-  static deleteReview(reviewId) {
-    // 1. delete review from IDB
-    
-    // 2. write action to temp object store (object type, id, action)
-
-    // 3. DELETE 
-
-    // 4. 200 OK ? delete from temp object store : leave it until we're online
-
-
+  static deleteReviewDB(reviewId) {
+    return DBHelper.openRestIdb().then(db => {
+      if (db) {
+        // 1. delete review from IDB
+        return db.transaction('reviews', 'readwrite').objectStore('reviews').delete(parseInt(reviewId)).then(response => {
+          // 2. write action to temp object store (id, action)
+          db.transaction('reviewAction', 'readwrite').objectStore('reviewAction').put({'id': parseInt(reviewId), 'action': 'deleteReview'}).then(response => {
+            // 3. DELETE on network
+            DBHelper.deleteReviewNetwork(parseInt(reviewId)).then(response => {
+              // 4. DELETED ? delete from temp object store : leave it until we're online and post
+              if (response.status >= 200 && response.status < 300) {
+                DBHelper.deleteAction(db, parseInt(reviewId));
+              }
+            })
+          })
+        }).catch(error => {
+          console.log(error);
+        })
+      }
+    })
   }
 
   static deleteReviewNetwork(reviewId) {
-
+    return fetch(`${this.DATABASE_URL}/reviews/${parseInt(reviewId)}` , { method: 'DELETE' });
   }
 
   // delete failed request from TMP objectStore
   static deleteAction(db, actionId) {
-    if (db) db.transaction('reviewAction', 'readwrite').objectStore('reviewAction').delete(actionId);
+    if (db) db.transaction('reviewAction', 'readwrite').objectStore('reviewAction').delete(parseInt(actionId));
   }
 
   // execute failed requests when we're finaly online
@@ -271,7 +277,7 @@ class DBHelper {
         db.transaction('reviewAction').objectStore('reviewAction').getAll().then(response=> {
           for (const action of response) {
             switch(action.action) {
-              case "newReview" : {
+              case "newReview" : 
                 return db.transaction('reviews').objectStore('reviews').get(action.id).then(review => {
                   return DBHelper.postReviewNetwork(review).then(response => {
                     if (response.status >= 200 && response.status < 300) {
@@ -281,9 +287,15 @@ class DBHelper {
                 }).catch(error => {
                   console.log(error);
                 })
-              }
-              case "deleteReview": DBHelper.deleteReviewNetwork(reviewId);
-                break;
+              case "deleteReview": 
+                return DBHelper.deleteReviewNetwork(action.id).then(response => {
+                  // 4. DELETED ? delete from temp object store : leave it until we're online and post
+                  if ((response.status >= 200 && response.status < 300) || response.status === 404 /* not found in DB, so we don't need this action anymore */) {
+                    DBHelper.deleteAction(db, action.id);
+                  }
+                }).catch(error => {
+                  console.log(error);
+                })
               }
             }
           return Promise.resolve();
