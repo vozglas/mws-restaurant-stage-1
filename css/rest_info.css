@@ -179,12 +179,48 @@ nav h1 a:focus {
   #restaurant-name {
     color: #14598A;
     font-weight: 400;
-    margin: 30px 0 10px 30px;
+    margin: 30px 0 10px 15px;
     text-transform: uppercase;
     line-height: 1.1;
     width: 100%;
   }
+
+  #restaurant-name span {
+    color: #dd3636;
+    padding-left: 10px;
+    font-size: 1.2em;
+  }
   
+  .favorite {
+    margin: 0 0 10px 30px;
+  }
+
+  .btn-add-favorite {
+    border: 0;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 5px;
+    color: white; 
+    background-color: rgb(2, 109, 2);
+  }
+
+  .btn-remove-favorite {
+    background-color: #A52A2A;
+  }
+
+  .btn-add-favorite, .btn-remove-favorite {
+    border: 0;
+    padding: 10px;
+    border-radius: 5px;
+    margin-top: 5px;
+    color: white; 
+  }
+
+  .btn-add-favorite:hover, .btn-add-favorite:focus,
+  .btn-remove-favorite:hover, .btn-remove-favorite:focus {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2),0 6px 20px 0 rgba(0,0,0,0.19);
+  }
+
   .rest-info{
       width: 100%;
   }

@@ -14,13 +14,15 @@ class DBHelper {
       return Promise.resolve();
     }
   
-    return idb.open('restDB', 1, function(upgradeDb) {
+    return idb.open('restDB', 2, function(upgradeDb) {
       switch (upgradeDb.oldVersion) {
         case 0:
           upgradeDb.createObjectStore('restaurants', { keyPath: 'id' });
           const reviewsStore = upgradeDb.createObjectStore('reviews', { keyPath: 'id', autoIncrement:true });
           reviewsStore.createIndex('reviewsByIndex', 'restaurant_id');   
-          upgradeDb.createObjectStore('reviewAction', { keyPath: 'id'})
+          upgradeDb.createObjectStore('reviewAction', { keyPath: 'id'});
+        case 1:
+          upgradeDb.createObjectStore('restaurantAction', { keyPath: 'id'});
       }
     });
   }
@@ -228,6 +230,8 @@ static fetchReviewsByRestaurantId(restaurantId) {
         }).catch(error => {
           console.log(error);
         })
+      } else {
+        DBHelper.postReviewNetwork(review);
       }
     })
   }
@@ -257,6 +261,8 @@ static fetchReviewsByRestaurantId(restaurantId) {
         }).catch(error => {
           console.log(error);
         })
+      } else {
+        DBHelper.deleteReviewNetwork(parseInt(reviewId));
       }
     })
   }
@@ -270,10 +276,42 @@ static fetchReviewsByRestaurantId(restaurantId) {
     if (db) db.transaction('reviewAction', 'readwrite').objectStore('reviewAction').delete(parseInt(actionId));
   }
 
+  // Favorite | Unfavorite restaurant
+  static favoriteRestaurant(restaurant, isFavorite) {
+    return DBHelper.openRestIdb().then(db => {
+      if (db) {
+        // 1. write action to temp object store (id, action)
+        return db.transaction('restaurantAction', 'readwrite').objectStore('restaurantAction').put({'id': restaurant.id, 'action': isFavorite}).then(response => {
+          // Update restaurant in objectStore
+          restaurant.is_favorite = isFavorite;
+          return db.transaction('restaurants', 'readwrite').objectStore('restaurants').put(restaurant).then(response => {
+            // 2. POST to network
+              DBHelper.favoriteRestaurantNetwork(restaurant.id, isFavorite).then(response => {
+              // 3.  OK ? delete action from temp object store : leave it until we're online and post
+              if (response.status >= 200 && response.status < 300) {
+                db.transaction('restaurantAction', 'readwrite').objectStore('restaurantAction').delete(parseInt(restaurant.id));
+              }
+              return restaurant;
+            })
+          })
+        })
+      } else {
+        return DBHelper.favoriteRestaurantNetwork(restaurant.id, isFavorite);
+      }
+    })
+  }
+
+  static favoriteRestaurantNetwork(restaurantId, isFavorite) {
+    return fetch(`${this.DATABASE_URL}/restaurants/${restaurantId}/?is_favorite=${isFavorite}` , {
+      method: 'PUT'
+    });
+  }
+
   // execute failed requests when we're finaly online
   static executeFailedRequests() {
     return DBHelper.openRestIdb().then(db => {
       if (db) {
+        // add | delete | update reviews
         db.transaction('reviewAction').objectStore('reviewAction').getAll().then(response=> {
           for (const action of response) {
             switch(action.action) {
@@ -298,11 +336,10 @@ static fetchReviewsByRestaurantId(restaurantId) {
                 })
               }
             }
-          return Promise.resolve();
         })
       }
     })
-  }
+  }  
 
 /*--------------------------------------------- OTHER ----------------------------------------------------------------*/  
   /**

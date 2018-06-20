@@ -64,12 +64,40 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
   const name = document.getElementById('restaurant-name');
   name.innerHTML = restaurant.name;
+  
+  const favorite = document.createElement('div');
+
+  if (restaurant.is_favorite) {
+    name.innerHTML += `<span>★</span>`;
+    name.appendChild(favorite);
+    const btnFavorite = document.createElement('button');
+    btnFavorite.className = 'btn-remove-favorite';
+    btnFavorite.innerText = 'Remove this restaurant from favorites!';
+    btnFavorite.addEventListener('click', function() {
+      DBHelper.favoriteRestaurant(restaurant, false).then(response => {
+        fillRestaurantHTML();
+      });
+    });
+    favorite.appendChild(btnFavorite);
+  } else {
+    name.appendChild(favorite);
+    const btnUnFavorite = document.createElement('button');
+    btnUnFavorite.className = 'btn-add-favorite';
+    btnUnFavorite.innerText = 'Add this restaurant to favorites!';
+    btnUnFavorite.addEventListener('click', function() {
+      DBHelper.favoriteRestaurant(restaurant, true).then(response => {
+        fillRestaurantHTML();
+      });
+    });
+    favorite.appendChild(btnUnFavorite);
+  }
+  
 
   const address = document.getElementById('restaurant-address');
   address.innerHTML = restaurant.address;
 
   const picture = document.getElementById('restaurant-picture');
-  
+  picture.innerHTML = "";
 
   picture.appendChild(makePictureSource(restaurant, "", '.webp', '(min-width: 1200px), (min-width: 650px) and (max-width: 849px)'));
   picture.appendChild(makePictureSource(restaurant, "medium", '.webp', '(min-width: 850px) and (max-width: 1199px), (min-width: 500px) and (max-width: 649px)'));
@@ -107,6 +135,7 @@ fillRestaurantHTML = (restaurant = self.restaurant) => {
 
 }
 
+
 // create source for <picture>
 makePictureSource = (restaurant, picSize = "", picExtension, mediaQuery) => {
   const picSource = document.createElement('source');
@@ -121,6 +150,7 @@ makePictureSource = (restaurant, picSize = "", picExtension, mediaQuery) => {
  */
 fillRestaurantHoursHTML = (operatingHours = self.restaurant.operating_hours) => {
   const hours = document.getElementById('restaurant-hours');
+  hours.innerHTML = '';
   for (let key in operatingHours) {
     const row = document.createElement('tr');
 
