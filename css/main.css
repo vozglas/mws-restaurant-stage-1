@@ -132,6 +132,10 @@ nav h1 a:focus {
     padding: 0 10px;
     width: 200px;
   }
+  .filter-options label {
+    color: white;
+    font-size: 1rem;
+  }
   
   .filter-options select:focus{
     color: #A52A2A;
@@ -244,6 +248,15 @@ nav h1 a:focus {
   @media screen and (max-height: 500px) {
     .inside #map {
         height: 150px;
+    }
+  }
+
+  @media screen and (max-width: 800px) {
+    .filter-options {
+      justify-content: center;
+    }
+    .favorite{
+      margin: 10px;
     }
   }
   

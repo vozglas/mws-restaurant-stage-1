@@ -52,7 +52,7 @@ class DBHelper {
     let update = false;
     return DBHelper.openRestIdb().then(db => {
       if (db) {
-        return DBHelper.getAllRestaurantsFromNetwork().then(restaurants => {
+          DBHelper.getAllRestaurantsFromNetwork().then(restaurants => {
           let arrToAdd = restaurants.filter(elem => {
             return DBHelper.checkArray(dbArray, elem);
           });
@@ -93,7 +93,7 @@ class DBHelper {
   /**
    * Fetch restaurants by a cuisine and a neighborhood
    */
-  static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood) {
+  static fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, isFavorite) {
     // Fetch all restaurants
     return DBHelper.fetchRestaurants().then(restaurants => {
       let results = restaurants
@@ -103,6 +103,10 @@ class DBHelper {
         if (neighborhood != 'all') { // filter by neighborhood
           results = results.filter(r => r.neighborhood == neighborhood);
         }
+        if (isFavorite) { // filter by favorite
+          results = results.filter(r => r.is_favorite == isFavorite);
+        }
+        
         return results;
     }).catch(error => {
       console.log(error);

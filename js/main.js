@@ -85,7 +85,8 @@ window.initMap = () => {
 /**
  * Update page and map for current restaurants.
  */
-updateRestaurants = () => {
+updateRestaurants = (isFavorite = false) => {
+  
   const cSelect = document.getElementById('cuisines-select');
   const nSelect = document.getElementById('neighborhoods-select');
 
@@ -95,7 +96,7 @@ updateRestaurants = () => {
   const cuisine = cSelect[cIndex].value;
   const neighborhood = nSelect[nIndex].value;
 
-  DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood).then(restaurants => {
+  DBHelper.fetchRestaurantByCuisineAndNeighborhood(cuisine, neighborhood, isFavorite).then(restaurants => {
     resetRestaurants(restaurants);
     fillRestaurantsHTML();
     lazyLoad();
