@@ -25,10 +25,10 @@
     <section>
       <div class="filter-options">
         <h2>Filter Results</h2>
-        <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants()" aria-label="select restaurant location" tabindex="0">
+        <select id="neighborhoods-select" name="neighborhoods" onchange="updateRestaurants(document.getElementById('favorite').checked)" aria-label="select restaurant location" tabindex="0">
           <option value="all">All Neighborhoods</option>
         </select>
-        <select id="cuisines-select" name="cuisines" onchange="updateRestaurants()" aria-label="select cuisine you prefer"> 
+        <select id="cuisines-select" name="cuisines" onchange="updateRestaurants(document.getElementById('favorite').checked)" aria-label="select cuisine you prefer"> 
           <option value="all">All Cuisines</option>
         </select>
         <div class="favorite">

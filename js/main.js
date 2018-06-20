@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', (event) => {
   registerSW();
   fetchNeighborhoods();
   fetchCuisines();
-  //DBHelper.fetchAllReviews();
 });
 
 /**
@@ -100,11 +99,6 @@ updateRestaurants = (isFavorite = false) => {
     resetRestaurants(restaurants);
     fillRestaurantsHTML();
     lazyLoad();
-    // updating restaurants DB from network
-    DBHelper.updateRestDB(restaurants).then(update => {
-      // reload restaurants if DB was updated
-      if (update === true) updateRestaurants();
-    });
   }).catch(error => {
     console.log(error);
   });

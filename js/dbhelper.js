@@ -48,24 +48,6 @@ class DBHelper {
     })
   }
 
-  static updateRestDB(dbArray = []) {
-    let update = false;
-    return DBHelper.openRestIdb().then(db => {
-      if (db) {
-          DBHelper.getAllRestaurantsFromNetwork().then(restaurants => {
-          let arrToAdd = restaurants.filter(elem => {
-            return DBHelper.checkArray(dbArray, elem);
-          });
-          for (const rest of arrToAdd) {
-            update = true;
-            db.transaction('restaurants', 'readwrite').objectStore('restaurants').put(rest);
-          }
-          return update;      
-        })
-      }
-    })
-  }    
-
   /**
    * Fetch restaurants by a cuisine type
    */
@@ -287,7 +269,7 @@ static fetchReviewsByRestaurantId(restaurantId) {
         // 1. write action to temp object store (id, action)
         return db.transaction('restaurantAction', 'readwrite').objectStore('restaurantAction').put({'id': restaurant.id, 'action': isFavorite}).then(response => {
           // Update restaurant in objectStore
-          restaurant.is_favorite = isFavorite;
+          restaurant.is_favorite = (isFavorite);
           return db.transaction('restaurants', 'readwrite').objectStore('restaurants').put(restaurant).then(response => {
             // 2. POST to network
               DBHelper.favoriteRestaurantNetwork(restaurant.id, isFavorite).then(response => {
@@ -382,6 +364,7 @@ static fetchReviewsByRestaurantId(restaurantId) {
     let addElem = true;
     for (const checkElem of arrayToCheck) {
       if (checkElem.id === elem.id)  addElem = false;
+      //break;
     }
     return addElem;
   }  
