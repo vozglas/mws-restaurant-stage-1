@@ -11,8 +11,20 @@ var markers = [];
 
 document.addEventListener('DOMContentLoaded', (event) => {
   registerSW();
+  
+  // Get everything from IDB
   fetchNeighborhoods();
   fetchCuisines();
+  
+  // Update local IDB from network
+  DBHelper.fetchRestaurants().then(response => {
+    DBHelper.updateRestaurantsDB(response).then(update => {
+      if (update) {
+        // if we have new info in IDB, update restaurants 
+        updateRestaurants();
+      }
+    })
+  });
 });
 
 /**

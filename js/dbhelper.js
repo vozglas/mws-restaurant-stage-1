@@ -48,6 +48,25 @@ class DBHelper {
     })
   }
 
+  // check if there are new restaurants and update IDB
+  static updateRestaurantsDB(dbArray = []) {
+    let update = false;
+    return DBHelper.openRestIdb().then(db => {
+      if (db) {
+        return DBHelper.getAllRestaurantsFromNetwork().then(restaurants => {
+          let arrToAdd = restaurants.filter(elem => {
+            return DBHelper.checkArray(dbArray, elem);
+          });
+          for (const restaurant of arrToAdd) {
+            update = true;
+            db.transaction('restaurants', 'readwrite').objectStore('restaurants').put(restaurant);
+          }
+          return update;      
+        })
+      }
+    })
+  } 
+
   /**
    * Fetch restaurants by a cuisine type
    */
@@ -86,9 +105,8 @@ class DBHelper {
           results = results.filter(r => r.neighborhood == neighborhood);
         }
         if (isFavorite) { // filter by favorite
-          results = results.filter(r => r.is_favorite == isFavorite);
+          results = results.filter(r => Boolean(r.is_favorite) === isFavorite);
         }
-        
         return results;
     }).catch(error => {
       console.log(error);
@@ -212,7 +230,7 @@ static fetchReviewsByRestaurantId(restaurantId) {
     });
   }
 
-  // Update estaurant review from network
+  // Update restaurant review from network
   static updateReviewsDB(dbArray = [], restaurantId) {
     let update = false;
     return DBHelper.openRestIdb().then(db => {
@@ -230,8 +248,6 @@ static fetchReviewsByRestaurantId(restaurantId) {
       }
     })
   } 
-
-
   // Delete a restaurant review
   static deleteReviewDB(reviewId) {
     return DBHelper.openRestIdb().then(db => {
@@ -406,7 +422,6 @@ static fetchReviewsByRestaurantId(restaurantId) {
     let addElem = true;
     for (const checkElem of arrayToCheck) {
       if (checkElem.id === elem.id)  addElem = false;
-      //break;
     }
     return addElem;
   }  
