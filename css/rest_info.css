@@ -410,10 +410,6 @@ nav h1 a:focus {
     color:#14598A;
   }
 
-  .review-btn-delete:hover, .review-btn-edit:hover{
-    text-decoration: none;
-  }
-
   .review-btn-wrap {}
 
   .new-review-btn-wrap {
@@ -430,6 +426,13 @@ nav h1 a:focus {
     margin: 10px;
     border-radius: 5px;
   } 
+
+  .review-btn-delete:hover, .review-btn-edit:hover,
+  .review-btn-delete:focus, .review-btn-edit:focus {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14),
+    0 3px 1px -2px rgba(0, 0, 0, .2),
+    0 1px 5px 0 rgba(0, 0, 0, .12);
+  }
 
   .new-review-btn, .cancel-review-btn {
     color: white;

@@ -360,6 +360,7 @@ createReviewHTML = (review) => {
     document.getElementById(`review-footer-container-${review.id}`).style.display = 'none';
     document.getElementById(`edit-review-${review.id}`).style.display = 'block';
     fillEditForm(review);
+    document.getElementById( `cancel-review-btn-${review.id}`).focus();
   })
 
   const reviewBtnWrap = document.createElement('div');
@@ -373,7 +374,7 @@ createReviewHTML = (review) => {
   footer.appendChild(reviewBtnWrap);
   
   li.appendChild(footer);
-  li.appendChild(makeEditForm(review, document.activeElement));
+  li.appendChild(makeEditForm(review, btnEdit));
   return li;
 }
 
@@ -423,7 +424,7 @@ makeEditForm = (review, lastFocusedElem) => {
     review.updatedAt = new Date().getTime();
     // CLICK !!!
     // validate from + update review
-    validateReviewForm(review, "updateReview", "editReviewError");
+    validateReviewForm(review, "updateReview", `editReviewError-${review.id}`);
     // close edit form
     document.getElementById(`review-footer-container-${review.id}`).style.display = 'block';
     document.getElementById(`review-headAll-${review.id}`).style.display = 'block';
@@ -431,8 +432,8 @@ makeEditForm = (review, lastFocusedElem) => {
   });
   const editCancelReviewBtn = document.createElement('button');
   editCancelReviewBtn.className = 'cancel-review-btn';
+  editCancelReviewBtn.setAttribute('id', `cancel-review-btn-${review.id}`) ;
   editCancelReviewBtn.innerHTML = 'Cancel';
-  editCancelReviewBtn.focus();
   editCancelReviewBtn.addEventListener('click', function() {
     // CLICK !!!
     document.getElementById(`review-footer-container-${review.id}`).style.display = 'block';
@@ -447,7 +448,7 @@ makeEditForm = (review, lastFocusedElem) => {
 
   const editReviewError = document.createElement('div');
   editReviewError.className = 'new-review-error';
-  editReviewError.setAttribute('id', 'editReviewError');
+  editReviewError.setAttribute('id', `editReviewError-${review.id}`);
 
   editReviewWrap.appendChild(editReviewRatingLabel);
   editReviewWrap.appendChild(editReviewRating);
