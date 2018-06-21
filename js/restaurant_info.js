@@ -424,11 +424,12 @@ makeEditForm = (review, lastFocusedElem) => {
     review.updatedAt = new Date().getTime();
     // CLICK !!!
     // validate from + update review
-    validateReviewForm(review, "updateReview", `editReviewError-${review.id}`);
+    if (validateReviewForm(review, "updateReview", `editReviewError-${review.id}`)) {
     // close edit form
-    document.getElementById(`review-footer-container-${review.id}`).style.display = 'block';
-    document.getElementById(`review-headAll-${review.id}`).style.display = 'block';
-    editReviewWrap.style.display = 'none';
+      document.getElementById(`review-footer-container-${review.id}`).style.display = 'block';
+      document.getElementById(`review-headAll-${review.id}`).style.display = 'block';
+      editReviewWrap.style.display = 'none';
+    }
   });
   const editCancelReviewBtn = document.createElement('button');
   editCancelReviewBtn.className = 'cancel-review-btn';
@@ -477,8 +478,10 @@ validateReviewForm = (review = {}, actionAfter = '', errorContainer = '') => {
         updateReview(review);
         break;
     }
+    return true;
   } else {
     showErrors(errors, errorContainer);
+    return false;
   }
 }
 
