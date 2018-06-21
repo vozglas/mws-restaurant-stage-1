@@ -282,6 +282,12 @@ nav h1 a:focus {
     margin:auto;
     width: calc(50% - 24px);
   }
+
+  .edit-review-wrap
+  {
+    margin:50px 20px 20px;
+    display: none;
+  }
   
   .new-review-wrap h4 {
     color: #A52A2A;
@@ -301,35 +307,15 @@ nav h1 a:focus {
     font-size: 18px;
   }
 
-  .new-review-btn-wrap {
-    width: 100%;
-    text-align: right;
-  }
-    
-  .new-review-btn {
-    color: #fff;
-    background-color:  #14598A;
-    font-size: 1em;
-  }
-
-
-  .new-review-btn:hover, .new-review-btn:focus {
-    background-color:#A52A2A;
-    color: #fff;
-    text-decoration: none;
-    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14),
-    0 3px 1px -2px rgba(0, 0, 0, .2),
-    0 1px 5px 0 rgba(0, 0, 0, .12);
-  }
-
   .new-review-error > p {
     width: 100%;
     color: red;
   }
 
-  #reviews-container h3, .no-review, .new-review-author, .new-review-text, .new-review-btn, .new-review-rating {
+  #reviews-container h3, .no-review, .new-review-author, .new-review-text, .new-review-rating {
     padding: 10px;
     border-radius: 5px;
+    box-sizing: border-box;
   }
 
   #reviews-list {
@@ -339,13 +325,8 @@ nav h1 a:focus {
     flex-wrap: wrap;
   }
   
-  /* #reviews-list li:last-child {
-    margin-bottom: 80px;
-  } */
-  
   #reviews-list li {
     background-color: #fff;
-    border: 2px solid #f3f3f3;
     display: block;
     list-style-type: none;
     margin: 0 10px 30px;
@@ -365,9 +346,16 @@ nav h1 a:focus {
   
   .review-head-back {
       background-color: #f3f3f3;
+  }
+  
+  .review-name, .review-date, .review-head-back {
       color: #f3f3f3;
   }
   
+  .review-date {
+      text-align: right;
+  }
+
   .review-name, .review-date {
       display: inline-block;
       margin: 0;
@@ -375,14 +363,7 @@ nav h1 a:focus {
       font-size: 18px;
       padding: 20px 20px;
   }
-  .review-name {
-      color: #f3f3f3;
-  }
-  
-  .review-date {
-      color: #d9d9d9;
-      text-align: right;
-  }
+
   
   .review-rating {
     font-size: 18px;
@@ -400,42 +381,75 @@ nav h1 a:focus {
   .review-comments {
     font-size: 18px;
     padding: 0 20px;
-    margin-bottom: 30px;
+    margin-bottom: 60px;
   }
   
   .review-footer-container {
     position: absolute;
     width: 100%;
     text-align:  right;
-    bottom: 0px;
+    bottom: 0;
     margin: auto;
-    padding-top: 10px;
   }
 
-  .review-btn-link-delete,  .review-btn-link-edit{
-    background:none!important;
-    border:none; 
-    padding:0 !important;
-    text-transform:  uppercase;
-    font-size: .8em;
-    font-weight: 700;
-    font-family: roboto, Arial, Helvetica, sans-serif;
-    text-decoration: underline;
-    cursor:pointer;
-    margin: 0 15px;
+  .review-edit-form {
+    display: flex;
+    flex-wrap: wrap;
   }
 
-  .review-btn-link-delete {
+  .review-edit-form select {
+    padding: 5px;
+    border-radius: 5px;
+  }
+
+  .review-btn-delete {
     color:red;
   }
 
-  .review-btn-link-edit {
+  .review-btn-edit {
     color:#14598A;
   }
 
-  .review-btn-link-delete:hover, .review-btn-link-edit:hover{
+  .review-btn-delete:hover, .review-btn-edit:hover{
     text-decoration: none;
   }
+
+  .review-btn-wrap {}
+
+  .new-review-btn-wrap {
+    width: 100%;
+    text-align: right;
+  }
+
+    
+  .new-review-btn, .cancel-review-btn, 
+  .review-btn-delete, .review-btn-edit {
+    font-size: 1em;
+    padding: 10px;
+    border: none;
+    margin: 10px;
+    border-radius: 5px;
+  } 
+
+  .new-review-btn, .cancel-review-btn {
+    color: white;
+  }
+
+  .new-review-btn {
+    background-color:  #14598A;
+  }
+
+  .cancel-review-btn {
+    background-color: grey;
+  }
+
+  .new-review-btn:hover, .new-review-btn:focus,
+  .cancel-review-btn:hover, .cancel-review-btn:focus {
+    box-shadow: 0 2px 2px 0 rgba(0, 0, 0, .14),
+    0 3px 1px -2px rgba(0, 0, 0, .2),
+    0 1px 5px 0 rgba(0, 0, 0, .12);
+  }
+
 
   .rating-no-stars{
      color: #888;

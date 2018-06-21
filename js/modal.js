@@ -4,9 +4,9 @@ let lastTabStop = null;
 let modal = null;
 let focusOnExit = null;
 
-function openModal (dlgId, lastFocusedElement, action) {
+function openModalDeleteReview (lastFocusedElement) {
     focusOnExit = lastFocusedElement;
-    modal = document.getElementById(dlgId);
+    modal = document.getElementById('dlgModalDeleteReview');
     modal.style.display = "block";
     
     const btnClose = modal.getElementsByClassName('modal-button-cancel')[0];
@@ -15,13 +15,9 @@ function openModal (dlgId, lastFocusedElement, action) {
     const objId = document.getElementById('hidObjId').value;
 
     btnOk.addEventListener('click', function() {
-        switch(action) {
-            case 'deleteReview': 
             deleteReview(objId);
             modal.style.display = "none";
-            break;
-        }
-    })
+    });
 
     // When the user clicks on cancel buttom, close the modal
     btnClose.addEventListener('click', function() {

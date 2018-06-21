@@ -179,25 +179,8 @@ static fetchReviewsByRestaurantId(restaurantId) {
       }
     });
   }
-  static updateReviewsDB(dbArray = [], restaurantId) {
-    let update = false;
-    return DBHelper.openRestIdb().then(db => {
-      if (db) {
-        return DBHelper.getAllReviewsFromNetwork(restaurantId).then(reviews => {
-          let arrToAdd = reviews.filter(elem => {
-            return DBHelper.checkArray(dbArray, elem);
-          });
-          for (const review of arrToAdd) {
-            update = true;
-            db.transaction('reviews', 'readwrite').objectStore('reviews').put(review);
-          }
-          return update;      
-        })
-      }
-    })
-  } 
 
-  // Add new review
+  // Create a new restaurant review
   static addNewReviewDB(review) {
     return DBHelper.openRestIdb().then(db => {
       if (db) {
@@ -229,6 +212,27 @@ static fetchReviewsByRestaurantId(restaurantId) {
     });
   }
 
+  // Update estaurant review from network
+  static updateReviewsDB(dbArray = [], restaurantId) {
+    let update = false;
+    return DBHelper.openRestIdb().then(db => {
+      if (db) {
+        return DBHelper.getAllReviewsFromNetwork(restaurantId).then(reviews => {
+          let arrToAdd = reviews.filter(elem => {
+            return DBHelper.checkArray(dbArray, elem);
+          });
+          for (const review of arrToAdd) {
+            update = true;
+            db.transaction('reviews', 'readwrite').objectStore('reviews').put(review);
+          }
+          return update;      
+        })
+      }
+    })
+  } 
+
+
+  // Delete a restaurant review
   static deleteReviewDB(reviewId) {
     return DBHelper.openRestIdb().then(db => {
       if (db) {
@@ -293,6 +297,37 @@ static fetchReviewsByRestaurantId(restaurantId) {
     });
   }
 
+
+  //Update a restaurant review
+  static updateReview(review) {
+    DBHelper.openRestIdb().then(db => {
+      if (db) {
+        // 1. update review in IDB
+        db.transaction('reviews', 'readwrite').objectStore('reviews').put(review).then(response => {
+          // 2. write action to temp object store (id, action)
+          db.transaction('reviewAction', 'readwrite').objectStore('reviewAction').put({'id': parseInt(review.id), 'action': 'updateReview'}).then(response => {
+            // 3. update review on network
+            return DBHelper.updateReviewNetwork(review).then(response => {
+              // 4. UPDATED ? delete from temp object store : leave it until we're online and post
+              return db.transaction('reviewAction', 'readwrite').objectStore('reviewAction').delete(review.id);
+            })
+          })
+        }).catch(error => {
+          console.log(error);
+        });
+      } else {
+        return updateReviewNetwork(review);
+      }
+    });
+  }
+
+  static updateReviewNetwork(review) {
+    return fetch(`${this.DATABASE_URL}/reviews/${review.id}` , {
+      method: 'PUT',
+      body: JSON.stringify(review)
+    });
+  }
+
   // execute failed requests when we're finaly online
   static executeFailedRequests() {
     return DBHelper.openRestIdb().then(db => {
@@ -319,6 +354,13 @@ static fetchReviewsByRestaurantId(restaurantId) {
                   }
                 }).catch(error => {
                   console.log(error);
+                })
+              case "updateReview":
+                return db.transaction('reviews').objectStore('reviews').get(action.id).then(review => {
+                  return DBHelper.updateReviewNetwork(review).then(response => {
+                    // 4. UPDATED ? delete from temp object store : leave it until we're online and post
+                    return db.transaction('reviewAction', 'readwrite').objectStore('reviewAction').delete(review.id);
+                  })
                 })
               }
             }
