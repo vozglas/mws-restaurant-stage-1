@@ -383,6 +383,7 @@ fillEditForm = (review) => {
   document.getElementById(`editReviewText-${review.id}`).value = review.comments;
 }
 
+// create edit form
 makeEditForm = (review, lastFocusedElem) => {
 
   const editReviewWrap = document.createElement('div');
