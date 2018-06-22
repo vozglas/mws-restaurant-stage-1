@@ -10,6 +10,16 @@ var markers = [];
  */
 
 document.addEventListener('DOMContentLoaded', (event) => {
+  updateRestaurants();
+
+  document.getElementById('map-loader').addEventListener('click', function(){
+    // load map
+    loadMap();
+    // show map 
+    document.getElementById('map').style.display = 'block';
+    document.getElementById('map-loader').style.display = 'none';
+  })
+  
   registerSW();
   
   // Get everything from IDB
@@ -77,10 +87,24 @@ fillCuisinesHTML = (cuisines = self.cuisines) => {
   }
 }
 
+
+// load map on demand
+loadMap = () => {
+  const googleMapsScript = document.createElement('script');
+  var self = this;
+  window.map_callback = function() {
+      self.initMap();
+  }  
+  googleMapsScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAKRIkODyl52K4XmRBW7ezKhzIHJeF6Wpo&libraries=places&callback=map_callback');
+  googleMapsScript.async = true;
+  googleMapsScript.defer = true;
+  document.body.appendChild(googleMapsScript);
+}
 /**
  * Initialize Google map, called from HTML.
  */
-window.initMap = () => {
+initMap = () => {
+  console.log('loading')
   let loc = {
     lat: 40.722216,
     lng: -73.987501
@@ -186,12 +210,16 @@ createRestaurantHTML = (restaurant) => {
  */
 addMarkersToMap = (restaurants = self.restaurants) => {
   restaurants.forEach(restaurant => {
-    // Add marker to the map
-    const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
-    google.maps.event.addListener(marker, 'click', () => {
-      window.location.href = marker.url
-    });
-    self.markers.push(marker);
+    
+    // if map is loaded
+    if (self.map) {
+      // Add marker to the map
+      const marker = DBHelper.mapMarkerForRestaurant(restaurant, self.map);
+      google.maps.event.addListener(marker, 'click', () => {
+        window.location.href = marker.url
+      });
+      self.markers.push(marker);
+    }
   });
 }
 

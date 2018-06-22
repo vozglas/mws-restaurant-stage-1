@@ -20,6 +20,10 @@
 
   <main id="maincontent" role="main"> 
     <section id="map-container" aria-hidden="true">
+      <div id="map-loader">
+        <img src="img/google-maps-100.png">
+        <div id="map-loader-text">Click here to load restaurants on map!</div>
+      </div>
       <div id="map" class="home" role="application"></div>
     </section>
     <section>
@@ -44,7 +48,7 @@
   <script type="application/javascript" charset="utf-8" src="js/idb.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/dbhelper.js"></script>
   <script type="application/javascript" charset="utf-8" src="js/main.js"></script>
-  <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKRIkODyl52K4XmRBW7ezKhzIHJeF6Wpo&libraries=places&callback=initMap"></script>
+  <!-- <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKRIkODyl52K4XmRBW7ezKhzIHJeF6Wpo&libraries=places&callback=initMap"></script> -->
   
   <footer id="footer">
     Copyright (c) 2018 <a href="/" aria-label="Home page" id="footerLink"><strong>Restaurant Reviews</strong></a> All Rights Reserved.

@@ -98,11 +98,37 @@ nav h1 a:focus {
 
 
 /* ====================== Map ====================== */
-#map-container {max-width: 1400px;;}
+#map-loader{
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  background-color: #14598A;
+  cursor: pointer;
+  border-bottom: 1px solid #d9d9d9;
+}
+
+#map-loader img{
+  max-width:100%;
+  width: 50px;
+  margin-right: 10px;
+}
+
+#map-loader-text{
+  text-align: center;
+  font-size: 22px;
+  color: white;
+  margin-left: 10px;
+}
+
+#map-container {max-width: 1400px;}
+
 #map {
   height: 400px;
   width: 100%;
   background-color: #ccc;
+  display: none;
 }
 
 /*---------------------------------------------------------------------------*/
@@ -114,6 +140,7 @@ nav h1 a:focus {
     align-items: center;
     display: flex;
     flex-wrap: wrap; 
+    justify-content: center;
   }
   .filter-options h2 {
     color: white;
@@ -220,15 +247,20 @@ nav h1 a:focus {
         letter-spacing: 5px; 
         font-size: 0.6em;
     }
-  
+    #map-loader-text{
+      font-size: 14px;
+    }
     #footer {
         font-size: 0.6em;
     }
   }
   
   @media screen and (min-width: 451px) and (max-width: 599px) {
-    nav h1 a {
+    nav h1 a{
         font-size: 0.8em;
+    }
+    #map-loader-text{
+      font-size: 18px;
     }
   }
   
@@ -240,7 +272,7 @@ nav h1 a:focus {
   }
   
   @media screen and (max-height: 699px) {
-    #map.home {
+    #map.home, #map-loader {
         display: none;
     }
   }
