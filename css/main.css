@@ -115,11 +115,13 @@ nav h1 a:focus {
   margin-right: 10px;
 }
 
-#map-loader-text{
+#map-loader-text button{
   text-align: center;
   font-size: 22px;
   color: white;
   margin-left: 10px;
+  border: none;
+  background-color: transparent;
 }
 
 #map-container {max-width: 1400px;}
@@ -247,7 +249,7 @@ nav h1 a:focus {
         letter-spacing: 5px; 
         font-size: 0.6em;
     }
-    #map-loader-text{
+    #map-loader-text button{
       font-size: 14px;
     }
     #footer {
@@ -259,7 +261,7 @@ nav h1 a:focus {
     nav h1 a{
         font-size: 0.8em;
     }
-    #map-loader-text{
+    #map-loader-text button{
       font-size: 18px;
     }
   }
