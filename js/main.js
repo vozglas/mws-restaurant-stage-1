@@ -95,7 +95,7 @@ loadMap = () => {
   window.map_callback = function() {
       self.initMap();
   }  
-  googleMapsScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key=AIzaSyAKRIkODyl52K4XmRBW7ezKhzIHJeF6Wpo&libraries=places&callback=map_callback');
+  googleMapsScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=map_callback');
   googleMapsScript.async = true;
   googleMapsScript.defer = true;
   document.body.appendChild(googleMapsScript);
