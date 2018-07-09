@@ -272,18 +272,6 @@ nav h1 a:focus {
         width: 180px;
       }
   }
-  
-  @media screen and (max-height: 699px) {
-    #map.home, #map-loader {
-        display: none;
-    }
-  }
-  
-  @media screen and (max-height: 500px) {
-    .inside #map {
-        height: 150px;
-    }
-  }
 
   @media screen and (max-width: 800px) {
     .filter-options {
