@@ -58,7 +58,9 @@ class DBHelper {
             return DBHelper.checkArray(dbArray, elem);
           });
           for (const restaurant of arrToAdd) {
-            restaurant.is_favorite = (restaurant.is_favorite === "true"); // it returns as String from DB 0_o 
+            if (typeof restaurant.is_favorite === "string") {
+              restaurant.is_favorite = (restaurant.is_favorite === "true"); // it returns as String from DB after update!! 0_o
+            }
             update = true;
             db.transaction('restaurants', 'readwrite').objectStore('restaurants').put(restaurant);
           }
