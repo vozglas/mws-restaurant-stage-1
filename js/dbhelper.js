@@ -58,6 +58,7 @@ class DBHelper {
             return DBHelper.checkArray(dbArray, elem);
           });
           for (const restaurant of arrToAdd) {
+            restaurant.is_favorite = (restaurant.is_favorite === "true"); // it returns as String from DB 0_o 
             update = true;
             db.transaction('restaurants', 'readwrite').objectStore('restaurants').put(restaurant);
           }
@@ -421,7 +422,7 @@ static fetchReviewsByRestaurantId(restaurantId) {
   static checkArray(arrayToCheck, elem) {
     let addElem = true;
     for (const checkElem of arrayToCheck) {
-      if (checkElem.id === elem.id)  addElem = false;
+      if (checkElem.id === elem.id && checkElem.updatedAt === elem.updatedAt)  addElem = false;
     }
     return addElem;
   }  
