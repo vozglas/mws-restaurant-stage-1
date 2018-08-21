@@ -11,7 +11,7 @@ To test this app you need:
 ```
 loadMap = () => {
   ...
-  googleMapsScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=map_callback');
+  googleMapsScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key=**YOUR_API_KEY**&libraries=places&callback=map_callback');
   ...
 }
 ```
