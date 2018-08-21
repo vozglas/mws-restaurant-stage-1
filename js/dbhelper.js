@@ -55,9 +55,12 @@ class DBHelper {
       if (db) {
         return DBHelper.getAllRestaurantsFromNetwork().then(restaurants => {
           let arrToAdd = restaurants.filter(elem => {
-            return DBHelper.checkArray(dbArray, elem);
+            return DBHelper.checkArrayAddNew(dbArray, elem);
           });
           for (const restaurant of arrToAdd) {
+            if (typeof restaurant.is_favorite === "string") {
+              restaurant.is_favorite = (restaurant.is_favorite === "true"); // it returns as String from DB after update!! 0_o
+            }
             update = true;
             db.transaction('restaurants', 'readwrite').objectStore('restaurants').put(restaurant);
           }
@@ -230,19 +233,30 @@ static fetchReviewsByRestaurantId(restaurantId) {
     });
   }
 
-  // Update restaurant review from network
+  // Update reviews from network
   static updateReviewsDB(dbArray = [], restaurantId) {
     let update = false;
     return DBHelper.openRestIdb().then(db => {
       if (db) {
         return DBHelper.getAllReviewsFromNetwork(restaurantId).then(reviews => {
+          // add new reviews to IDB
           let arrToAdd = reviews.filter(elem => {
-            return DBHelper.checkArray(dbArray, elem);
+            return DBHelper.checkArrayAddNew(dbArray, elem);
           });
           for (const review of arrToAdd) {
             update = true;
             db.transaction('reviews', 'readwrite').objectStore('reviews').put(review);
           }
+
+          // remove deleted reviews from IDB
+          let arrToRemove = dbArray.filter(elem => {
+            return DBHelper.deleteNotExist(reviews, elem);
+          });
+          for (const review of arrToRemove) {
+            update = true;
+            db.transaction('reviews', 'readwrite').objectStore('reviews').delete(review.id);
+          }
+
           return update;      
         })
       }
@@ -418,12 +432,22 @@ static fetchReviewsByRestaurantId(restaurantId) {
     return marker;
   }
 
-  static checkArray(arrayToCheck, elem) {
+  // check, what we need to add to IDB
+  static checkArrayAddNew(arrayToCheck, elem) {
     let addElem = true;
     for (const checkElem of arrayToCheck) {
-      if (checkElem.id === elem.id)  addElem = false;
+      if (checkElem.id === elem.id && checkElem.updatedAt === elem.updatedAt)  addElem = false;
     }
     return addElem;
   }  
+
+  // delete not existing data from IDB
+  static deleteNotExist(networkData = [], elem) {
+    let deleteElem = true;
+    for (const dbElem of networkData) {
+      if (dbElem.id === elem.id) deleteElem = false;
+    }
+    return deleteElem;
+  }
 }
 
