@@ -7,11 +7,13 @@ To test this app you need:
 1. Run a Node development server, which you can find here https://github.com/vozglas/mws-restaurant-stage-3
 (Also there is a README file with insructions for getting the server up and running locally on your computer).
 
-2. Write your Google API key in js/main.js in loadMap() function
+2. Write your Google API key in js/main.js in loadMap() function.
+    (Change **YOUR_API_KEY** with your API key)
+
 ```JavaScript
 loadMap = () => {
   ...
-  googleMapsScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key=`**YOUR_API_KEY**`&libraries=places&callback=map_callback');
+  googleMapsScript.setAttribute('src', 'https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=map_callback');
   ...
 }
 ```
